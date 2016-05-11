@@ -1,0 +1,39 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bundle.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Romain Bellande",
+  "license": "ISC",
+  "dependencies": {
+    "browserify": "^13.0.1",
+    "ramda": "^0.21.0"
+  },
+  "devDependencies": {
+    "anyify": "^1.0.1",
+    "browjadify": "^2.6.0",
+    "browserify": "^13.0.1",
+    "gulp": "^3.9.1",
+    "gulp-inject": "^4.0.0",
+    "gulp-jade": "^1.1.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-livescript": "^3.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-server-livereload": "^1.7.4",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-stylus": "^2.3.1",
+    "gulp-uglify": "^1.5.3",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.5",
+    "jade": "^1.11.0",
+    "livescript": "^1.4.0",
+    "merge": "^1.2.0",
+    "stylify": "^1.3.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
+  }
+}
