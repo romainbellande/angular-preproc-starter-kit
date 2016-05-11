@@ -13,23 +13,17 @@ var gulp       = require('gulp'),
     rename     = require('gulp-rename'),
     sourcemaps = require('gulp-sourcemaps');
 
-var path = {
-  ls: ['./app/**/*.ls'],
-  jade: ['*.jade', './app/**/*.jade']
+var paths = {
+  ls: ['./src/**/*.ls'],
+  jade: ['./src/**/*.jade']
 };
 
 gulp.task('default', function() {
   // place code for your default task here
 });
 
-gulp.task('watch', function () {
-  watch(['./styles/*.less'], batch(function (events, done) {
-    gulp.start('default', done);
-  }));
-});
-
 gulp.task('ls', function() {
-  return gulp.src(path.ls)
+  return gulp.src(paths.ls)
   .pipe(sourcemaps.init())
   .pipe(livescript())
   .pipe(sourcemaps.write('./maps/'))
@@ -37,7 +31,7 @@ gulp.task('ls', function() {
 });
 
 gulp.task('jade', function() {
-  gulp.src(path.jade)
+  gulp.src(paths.jade)
     .pipe(sourcemaps.init())
     .pipe(gulpJade({
       jade: jade,
@@ -46,5 +40,29 @@ gulp.task('jade', function() {
     .pipe(sourcemaps.write('./maps/'))
     .pipe(gulp.dest('./build/'))
 });
+
+gulp.task('watch', function () {
+  gulp.watch(paths.ls, ['ls']);
+  gulp.watch(paths.jade,['jade']);
+});
+
+gulp.task('web-server', ['watch'], function () {
+  gulp.src('./build/')
+    .pipe(server({
+      livereload: {
+        enable: true,
+        filter: function (filename, cb) {
+          cb(!/\.ls$|\.jade$|node_modules/.test(filename));
+        }
+      },
+      directoryListing: false,
+      open: true
+    }));
+});
+
+gulp.task('serve', ['ls', 'jade', 'web-server']);
+
+
+
 
 
