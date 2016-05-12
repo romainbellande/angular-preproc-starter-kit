@@ -4,10 +4,11 @@ html
     title Getting Cozy with Browserify
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css')
     // build:css bundle.css
+    // bower:css
+    // endbower
+    // inject:css
+    // endinject
     // endbuild
-    style.
-      h1, p, div { text-align: center; }
-      html       { background: #fffffe; }
   body
     .container
       h2 Welcome to the Client Side.
@@ -17,6 +18,10 @@ html
     // build:js bundle.js
     // bower:js
     // endbower
+    script(src='app/core/app.modules.js')
+    script(src='app/core/app.setup.js')
+    script(src='app/core/app.routes.js')
+    script(src='app/core/app.constants.js')
     // inject:js
     // endinject
     // endbuild
