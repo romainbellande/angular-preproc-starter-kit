@@ -1,6 +1,6 @@
+"use strict"
 angular
-  .module \app do
-    * \ionic
+  .module \app [
     * \app.controllers
     * \app.directives
     * \app.services
@@ -9,7 +9,7 @@ angular
     * \ui.router
     * \ngStorage
     * \angularCSS
-    * \ngCordova
+  ]
   .config ($httpProvider) !->
     $httpProvider.defaults.headers
       ..common = {}

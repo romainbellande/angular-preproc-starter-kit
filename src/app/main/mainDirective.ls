@@ -1,3 +1,4 @@
+(angular.module 'app.directives').directive 'wall', wall
 wall.$inject =
   * \WallService
   * \UserService
@@ -16,5 +17,4 @@ wall = (WallService, UserService, TastingService) ->
       return )
     return
   directive
-'use strict'
-(angular.module 'app.directives').directive 'wall', wall
+

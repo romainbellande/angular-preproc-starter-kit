@@ -1,0 +1,20 @@
+{
+  "name": "todo",
+  "description": "",
+  "main": "bundle.js",
+  "authors": [
+    "Romain Bellande"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/romainbellande/ls_stylus_jade_starter",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.5"
+  }
+}
