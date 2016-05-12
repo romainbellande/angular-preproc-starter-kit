@@ -15,16 +15,20 @@ var gulp            = require('gulp'),
     angularFilesort = require('gulp-angular-filesort'),
     inject          = require('gulp-inject'),
     wiredep         = require('wiredep').stream,
-    usemin          = require('gulp-usemin-reloaded'),
-    cleanCSS        = require('gulp-clean-css'),
+    usemin          = require('gulp-usemin'),
+    minifyCss        = require('gulp-clean-css'),
     concat          = require('gulp-concat'),
-    concatCSS       = require('gulp-concat-css');
+    concatCss       = require('gulp-concat-css'),
+    uglify          = require('gulp-uglify'),
+    rev             = require('gulp-rev'),
+    minifyHtml      = require('gulp-htmlmin');
 
 var paths = {
   ls: ['./src/**/*.ls'],
   jade: ['./src/**/*.jade'],
   js: ['./build/**/*.js'],
-  maps: '.'
+  maps: '.',
+  bower: './bower_components/**/*.*'
 };
 
 gulp.task('default', function() {
@@ -34,15 +38,20 @@ gulp.task('default', function() {
 gulp.task('injection', function(){
 
   gulp.src('./build/index.html')
-  .pipe(wiredep({
-    directory: './bower_components',
-    devDependencies: true
-  }))
   .pipe(inject(
         gulp.src(['**/*.js'], {'cwd': __dirname + '/build'}) // gulp-angular-filesort depends on file contents, so don't use {read: false} here
         .pipe(angularFilesort()),
         { addRootSlash: false }
         ))
+  .pipe(gulp.dest('./build'));
+});
+
+gulp.task('wiredep', function(){
+  gulp.src('./build/index.html')
+  .pipe(wiredep({
+    directory: './bower_components',
+    devDependencies: true
+  }))
   .pipe(gulp.dest('./build'));
 });
 
@@ -67,26 +76,20 @@ gulp.task('jade', function() {
 
 gulp.task('watch', function () {
   gulp.watch(paths.ls, ['ls']);
-  gulp.watch(paths.jade,['jade']);
+  gulp.watch(paths.jade, ['jade', 'injection']);
+  gulp.watch(paths.bower, ['wiredep']);
 });
 
-gulp.task('usemin', function () {
-  gulp.src('build/**/*.js')
-    .pipe(
-      usemin({
-        rules: {
-          build: {
-            css: [cleanCSS(), concatCSS('bundle.css')],
-            js: [uglify(), rev()],
-            html: [minifyHtml({empty: true})],
-            remove: function( object, content ) {
-                return '';
-            }
-          }
-        }
-      })
-    )
-    .pipe(gulp.dest('./dist/'))
+gulp.task('usemin', function() {
+  return gulp.src('./build/**/*.html')
+    .pipe(usemin({
+      css: [ rev() ],
+      html: [ minifyHtml({ empty: true }) ],
+      js: [ uglify(), rev() ],
+      inlinejs: [ uglify() ],
+      inlinecss: [ minifyCss() ]
+    }))
+    .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('web-server', ['watch'], function () {
