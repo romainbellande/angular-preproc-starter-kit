@@ -1,27 +1,23 @@
-var gulp            = require('gulp'),
+var gulp        = require('gulp'),
 server          = require('gulp-server-livereload'),
 watch           = require('gulp-watch'),
 stylus          = require('gulp-stylus'),
 gulpJade        = require('gulp-jade'),
 jade            = require('jade'),
 livescript      = require('gulp-livescript'),
-browserify      = require('browserify'),
-buffer          = require('vinyl-buffer'),
-gutil           = require('gulp-util'),
 livereload      = require('gulp-livereload'),
-merge           = require('merge'),
-rename          = require('gulp-rename'),
 sourcemaps      = require('gulp-sourcemaps'),
 angularFilesort = require('gulp-angular-filesort'),
 inject          = require('gulp-inject'),
 wiredep         = require('wiredep').stream,
 usemin          = require('gulp-usemin'),
-minifyCss        = require('gulp-clean-css'),
+minifyCss       = require('gulp-clean-css'),
 concat          = require('gulp-concat'),
 concatCss       = require('gulp-concat-css'),
 uglify          = require('gulp-uglify'),
 rev             = require('gulp-rev'),
-minifyHtml      = require('gulp-htmlmin');
+minifyHtml      = require('gulp-htmlmin'),
+clean           = require('gulp-clean');
 
 var paths = {
   ls: ['./src/**/*.ls'],
@@ -41,7 +37,7 @@ gulp.task('default', function() {
   // place code for your default task here
   });
 
-gulp.task('injection', ['ls', 'stylus'], function(){
+gulp.task('injection', ['ls', 'stylus', 'jade'], function(){
   return gulp.src('./build/index.html')
   .pipe(inject(
     gulp.src(paths.inject_js, {'cwd': __dirname + '/build'})
@@ -60,6 +56,11 @@ gulp.task('wiredep', ['injection'], function(){
     devDependencies: true
     }))
   .pipe(gulp.dest('./build'));
+  });
+
+gulp.task('clean_dist', function () {
+  return gulp.src('dist/', {read: false})
+  .pipe(clean());
   });
 
 gulp.task('ls', function() {
@@ -95,10 +96,10 @@ gulp.task('watch', function () {
   gulp.watch(paths.bower_files, ['wiredep']);
   });
 
-gulp.task('usemin', function() {
+gulp.task('usemin', ['clean_dist'], function() {
   return gulp.src(paths.html)
   .pipe(usemin({
-    css: [ rev() ],
+    css: [ minifyCss(), rev() ],
     html: [ minifyHtml({collapseWhitespace: true}) ],
     js: [ uglify(), rev() ],
     inlinejs: [ uglify() ],
@@ -107,7 +108,7 @@ gulp.task('usemin', function() {
   .pipe(gulp.dest('./dist/'));
   });
 
-gulp.task('web-server', ['watch'], function () {
+gulp.task('web-server', ['watch', 'builder'], function () {
   gulp.src('./build/')
   .pipe(server({
     livereload: {
@@ -121,9 +122,9 @@ gulp.task('web-server', ['watch'], function () {
       }));
   });
 
-gulp.task('builder', ['ls','jade', 'stylus', 'wiredep', 'injection']);
+gulp.task('builder', ['ls','jade', 'stylus', 'injection', 'wiredep']);
 gulp.task('serve', ['builder', 'web-server']);
-gulp.task('dist', ['builder', 'usemin']);
+gulp.task('dist', ['builder', 'clean_dist', 'usemin']);
 
 
 
