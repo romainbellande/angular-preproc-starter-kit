@@ -17,10 +17,11 @@ concatCss       = require('gulp-concat-css'),
 uglify          = require('gulp-uglify'),
 rev             = require('gulp-rev'),
 minifyHtml      = require('gulp-htmlmin'),
-clean           = require('gulp-clean');
+clean           = require('gulp-clean'),
+copy            = require('gulp-copy');
 
 var paths = {
-  ls: ['./src/**/*.ls'],
+  ls: ['./src/**/*.ls', './src/lib/**/*.ls'],
   jade: ['./src/**/*.jade'],
   stylus: ['./src/**/*.styl'],
   js: ['./build/app/**/*.js'],
@@ -30,11 +31,29 @@ var paths = {
   bower_dir: './build/lib/',
   bower_files: './build/lib/**/*.*',
   inject_js: ['!**/app.**.js', 'app/**/*.js'],
-  inject_css: ['assets/**/*.css', 'app/**/*.css']
+  inject_css: ['assets/**/*.css', 'app/**/*.css'],
+  src_vendor_files: ['!./src/vendor/**/*.ls', './src/vendor/**/*.*'],
+  vendor_files: ['vendor/**/*.js', 'vendor/**/*.css']
 };
 
 gulp.task('default', function() {
   // place code for your default task here
+  });
+
+gulp.task('copy-lib', function () {
+  return gulp.src(paths.src_vendor_files)
+  .pipe(copy('./build/vendor/'));
+  });
+
+gulp.task('vendor', ['copy-lib', 'ls', 'jade'], function () {
+  return gulp.src('./build/index.html')
+  .pipe(inject(
+    gulp.src(paths.vendor_files, {'cwd': __dirname + '/build', 'read': false}),
+    {
+      addRootSlash: false,
+      starttag: '<!-- inject:vendor:{{ext}}-->'
+    }
+    )).pipe(gulp.dest('./build'));
   });
 
 gulp.task('injection', ['ls', 'stylus', 'jade'], function(){
@@ -122,7 +141,7 @@ gulp.task('web-server', ['watch', 'builder'], function () {
       }));
   });
 
-gulp.task('builder', ['ls','jade', 'stylus', 'injection', 'wiredep']);
+gulp.task('builder', ['ls','jade', 'stylus', 'vendor', 'injection', 'wiredep']);
 gulp.task('serve', ['builder', 'web-server']);
 gulp.task('dist', ['builder', 'clean_dist', 'usemin']);
 

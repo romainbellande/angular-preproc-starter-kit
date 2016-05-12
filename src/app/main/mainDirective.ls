@@ -4,6 +4,7 @@ wall = (WallService, UserService, TastingService) ->
     restrict: \E
     templateUrl: \app/wall/wallView.html
   }
+
   link = (scope, element, attrs) ->
     scope.TastingService = TastingService
     scope.UserService = UserService
