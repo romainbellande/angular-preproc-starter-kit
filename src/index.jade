@@ -1,8 +1,7 @@
 doctype html
-html
+html(ng-app='app')
   head
-    title Getting Cozy with Browserify
-    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css')
+    title Angular gulp preprocessors starter-kit
     // build:css bundle.css
     // bower:css
     // endbower
@@ -17,6 +16,9 @@ html
       .well
         p Test 2
         #response
+    home
+    ui-view
+    a(ui-sref='home') Home
     // build:js bundle.js
     // bower:js
     // endbower
