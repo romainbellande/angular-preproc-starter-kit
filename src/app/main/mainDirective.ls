@@ -1,17 +1,15 @@
 wall = (WallService, UserService, TastingService) ->
-  directive = {
+  directive =
     link: link
     restrict: \E
-    templateUrl: \app/wall/wallView.html
-  }
+    template: ''
 
-  link = (scope, element, attrs) ->
+
+  link = (scope, element, attrs) !->
     scope.TastingService = TastingService
     scope.UserService = UserService
-    TastingService.getUserTastings ((err, res) ->
+    TastingService.getUserTastings (err, res) !->
       TastingService.tastings = res if not err
-      return )
-    return
   directive
 
 wall.$inject =

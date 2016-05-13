@@ -18,14 +18,20 @@ uglify          = require('gulp-uglify'),
 rev             = require('gulp-rev'),
 minifyHtml      = require('gulp-htmlmin'),
 clean           = require('gulp-clean'),
-copy            = require('gulp-copy');
+copy            = require('gulp-copy'),
+gutil           = require('gulp-util'),
+vinylPaths      = require('vinyl-paths'),
+debug           = require('gulp-debug'),
+tap             = require('gulp-tap'),
+fs              = require('fs'),
+minifyHtmlInput = require('html-minifier').minify;;
 
 var paths = {
   ls: ['./src/**/*.ls', './src/lib/**/*.ls'],
   jade: ['./src/**/*.jade'],
   stylus: ['./src/**/*.styl'],
   js: ['./build/app/**/*.js'],
-  html: ['./build/**/*.html'],
+  html: ['app/**/*.html'],
   css: ['assets/**/*.css', 'app/**/*.css'],
   maps: '.',
   bower_dir: './build/lib/',
@@ -33,7 +39,8 @@ var paths = {
   inject_js: ['!**/app.**.js', 'app/**/*.js'],
   inject_css: ['assets/**/*.css', 'app/**/*.css'],
   src_vendor_files: ['!./src/vendor/**/*.ls', './src/vendor/**/*.*'],
-  vendor_files: ['vendor/**/*.js', 'vendor/**/*.css']
+  vendor_files: ['vendor/**/*.js', 'vendor/**/*.css'],
+  directives: ['./build/app/**/*Directive.js']
 };
 
 gulp.task('default', function() {
@@ -44,6 +51,24 @@ gulp.task('copy-lib', function () {
   return gulp.src(paths.src_vendor_files)
   .pipe(copy('./build/vendor/'));
   });
+gulp.task('inject-templates', ['ls', 'jade'], function () {
+    return gulp.src(paths.directives)
+  .pipe(inject(
+    gulp.src(paths.html, {'cwd': __dirname + '/build'}),
+    {
+      // addRootSlash: false,
+      relative: true,
+      starttag: 'template: \'',
+      endtag: '\'',
+      transform: function (filePath, file, i, length, targetFile) {
+        if (filePath.indexOf('/') === -1) {
+          // console.log(', template: \"' + file.contents.toString('utf-8') + '\"');
+          return minifyHtmlInput(file.contents.toString('utf-8'), {collapseWhitespace: true, preventAttributesEscaping: true});
+        }
+      }
+    }
+    )).pipe(gulp.dest('./build/app/'));
+});
 
 gulp.task('vendor', ['copy-lib', 'ls', 'jade'], function () {
   return gulp.src('./build/index.html')
