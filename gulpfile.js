@@ -102,7 +102,7 @@ gulp.task('wiredep', ['injection'], function(){
   .pipe(gulp.dest('./build'));
   });
 
-gulp.task('clean_dist', function () {
+gulp.task('clean_dist', ['builder'], function () {
   return gulp.src('dist/', {read: false})
   .pipe(clean());
   });
@@ -141,7 +141,7 @@ gulp.task('watch', function () {
   });
 
 gulp.task('usemin', ['clean_dist'], function() {
-  return gulp.src(paths.html)
+  return gulp.src('./build/index.html')
   .pipe(usemin({
     css: [ minifyCss(), rev() ],
     html: [ minifyHtml({collapseWhitespace: true}) ],
@@ -168,7 +168,7 @@ gulp.task('web-server', ['watch', 'builder'], function () {
 
 gulp.task('builder', ['ls','jade', 'stylus', 'vendor', 'injection', 'wiredep']);
 gulp.task('serve', ['builder', 'web-server']);
-gulp.task('dist', ['builder', 'clean_dist', 'usemin']);
+gulp.task('dist', ['usemin']);
 
 
 

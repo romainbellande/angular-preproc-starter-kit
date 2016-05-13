@@ -7,8 +7,6 @@ angular
     * \app.resources
     * \app.constants
     * \ui.router
-    * \ngStorage
-    * \angularCSS
   ]
   .config ($httpProvider) !->
     $httpProvider.defaults.headers
