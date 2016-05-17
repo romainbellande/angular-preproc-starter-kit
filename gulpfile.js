@@ -40,7 +40,7 @@ var paths = {
   inject_js: ['!**/app.**.js', 'app/**/*.js'],
   inject_css: ['assets/**/*.css', 'app/**/*.css'],
   src_vendor_files: ['!./src/vendor/**/*.ls', './src/vendor/**/*.*'],
-  vendor_files: ['vendor/**/*.js', 'vendor/**/*.css'],
+  vendor_files: ['!vendor/prelude-ls/*', 'vendor/**/*.js', 'vendor/**/*.css'],
   directives: ['./build/app/**/*Directive.js']
 };
 
@@ -60,7 +60,7 @@ gulp.task('inject-templates', ['ls', 'jade'], function () {
     {
       // addRootSlash: false,
       relative: true,
-      starttag: 'template: \'',
+      starttag: 'template = \'',
       endtag: '\'',
       transform: function (filePath, file, i, length, targetFile) {
         if (filePath.indexOf('/') === -1) {
@@ -72,7 +72,7 @@ gulp.task('inject-templates', ['ls', 'jade'], function () {
     )).pipe(gulp.dest('./build/app/'));
 });
 
-gulp.task('vendor', ['copy-lib', 'ls', 'jade'], function () {
+gulp.task('vendor', ['ls', 'jade'], function () {
   return gulp.src('./build/index.html')
   .pipe(inject(
     gulp.src(paths.vendor_files, {'cwd': __dirname + '/build', 'read': false}),
@@ -83,7 +83,7 @@ gulp.task('vendor', ['copy-lib', 'ls', 'jade'], function () {
     )).pipe(gulp.dest('./build'));
   });
 
-gulp.task('injection', ['ls', 'stylus', 'jade'], function(){
+gulp.task('injection', ['ls', 'stylus', 'jade', 'vendor'], function(){
   return gulp.src('./build/index.html')
   .pipe(inject(
     gulp.src(paths.inject_js, {'cwd': __dirname + '/build'})
@@ -137,6 +137,7 @@ gulp.task('stylus', function () {
   });
 
 gulp.task('watch', ['builder'], function () {
+  gulp.watch(paths.src_vendor_files, ['vendor']);
   gulp.watch(paths.ls, ['inject-templates', 'injection', 'wiredep']);
   gulp.watch(paths.jade, ['inject-templates', 'injection', 'wiredep']);
   gulp.watch(paths.bower_files, ['wiredep']);
@@ -155,7 +156,7 @@ gulp.task('usemin', ['clean_dist'], function() {
   });
 
 gulp.task('serve', ['watch'], function () {
-  gulp.src('./dist/')
+  gulp.src('./build/')
   .pipe(server({
     livereload: {
       enable: true,

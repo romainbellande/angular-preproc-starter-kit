@@ -17,5 +17,11 @@
   "dependencies": {
     "angular": "^1.5.5",
     "angular-ui-router": "^0.2.18"
-  }
+  },
+  "overrides": {
+    "prelude-ls": {
+      "main": "preroll.js"
+    }
+  },
+  "devDependencies": {}
 }
