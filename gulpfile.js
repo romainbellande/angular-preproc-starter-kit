@@ -60,7 +60,7 @@ gulp.task('inject-templates', ['ls', 'jade'], function () {
     {
       // addRootSlash: false,
       relative: true,
-      starttag: 'template = \'',
+      starttag: 'template: \'',
       endtag: '\'',
       transform: function (filePath, file, i, length, targetFile) {
         if (filePath.indexOf('/') === -1) {
