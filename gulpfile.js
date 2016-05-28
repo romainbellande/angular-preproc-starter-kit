@@ -139,6 +139,7 @@ gulp.task('stylus', function () {
 gulp.task('watch', ['builder'], function () {
   gulp.watch(paths.ls, ['inject-templates', 'injection', 'wiredep']);
   gulp.watch(paths.jade, ['inject-templates', 'injection', 'wiredep']);
+  gulp.watch(paths.stylus, ['stylus']);
   gulp.watch(paths.bower_files, ['wiredep']);
   });
 
@@ -155,7 +156,7 @@ gulp.task('usemin', ['clean_dist'], function() {
   });
 
 gulp.task('serve', ['watch'], function () {
-  gulp.src('./dist/')
+  gulp.src('./build/')
   .pipe(server({
     livereload: {
       enable: true,
