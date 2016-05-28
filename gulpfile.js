@@ -104,7 +104,7 @@ gulp.task('wiredep', ['injection'], function(){
   .pipe(gulp.dest('./build'));
   });
 
-gulp.task('clean_dist', ['builder'], function () {
+gulp.task('clean_dist', ['build'], function () {
   return gulp.src('dist/', {read: false})
   .pipe(clean());
   });
@@ -136,7 +136,7 @@ gulp.task('stylus', function () {
   .pipe(gulp.dest('./build/'));
   });
 
-gulp.task('watch', ['builder'], function () {
+gulp.task('watch', ['build'], function () {
   gulp.watch(paths.src_vendor_files, ['vendor']);
   gulp.watch(paths.ls, ['inject-templates', 'injection', 'wiredep']);
   gulp.watch(paths.jade, ['inject-templates', 'injection', 'wiredep']);
@@ -170,7 +170,7 @@ gulp.task('serve', ['watch'], function () {
       }));
   });
 
-gulp.task('builder', ['inject-templates', 'stylus', 'vendor', 'injection', 'wiredep']);
+gulp.task('build', ['inject-templates', 'stylus', 'vendor', 'injection', 'wiredep']);
 gulp.task('dist', ['usemin']);
 
 

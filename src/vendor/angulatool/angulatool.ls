@@ -1,5 +1,8 @@
 let
-  window.angulatool
+  window.angulatool =
+    * directive: null
+      setDirective: (func) ->
+        @.directive = func
 # 'use strict'
 # require! {
 #   \prelude-ls
