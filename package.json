@@ -24,6 +24,7 @@
     "gulp-concat-css": "^2.2.0",
     "gulp-copy": "0.0.2",
     "gulp-debug": "^2.1.2",
+    "gulp-dogen": "^0.1.9",
     "gulp-htmlmin": "^2.0.0",
     "gulp-inject": "^4.0.0",
     "gulp-inject-file": "0.0.17",

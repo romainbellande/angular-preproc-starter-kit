@@ -25,7 +25,8 @@ debug           = require('gulp-debug'),
 tap             = require('gulp-tap'),
 fs              = require('fs'),
 minifyHtmlInput = require('html-minifier').minify,
-escape          = require('js-string-escape');
+escape          = require('js-string-escape'),
+dogen           = require('gulp-dogen');
 
 var paths = {
   ls: ['./src/**/*.ls', './src/lib/**/*.ls'],
@@ -46,18 +47,18 @@ var paths = {
 
 gulp.task('default', function() {
   // place code for your default task here
-  });
+});
 
 gulp.task('copy-lib', function () {
   return gulp.src(paths.src_vendor_files)
   .pipe(copy('./build/vendor/'));
-  });
+});
 
 gulp.task('inject-templates', ['ls', 'jade'], function () {
-    return gulp.src(paths.directives)
+  return gulp.src(paths.directives)
   .pipe(inject(
-    gulp.src(paths.html, {'cwd': __dirname + '/build'}),
-    {
+               gulp.src(paths.html, {'cwd': __dirname + '/build'}),
+               {
       // addRootSlash: false,
       relative: true,
       starttag: 'template: \'',
@@ -75,39 +76,39 @@ gulp.task('inject-templates', ['ls', 'jade'], function () {
 gulp.task('vendor', ['ls', 'jade'], function () {
   return gulp.src('./build/index.html')
   .pipe(inject(
-    gulp.src(paths.vendor_files, {'cwd': __dirname + '/build', 'read': false}),
-    {
-      addRootSlash: false,
-      starttag: '<!-- inject:vendor:{{ext}}-->'
-    }
-    )).pipe(gulp.dest('./build'));
-  });
+               gulp.src(paths.vendor_files, {'cwd': __dirname + '/build', 'read': false}),
+               {
+                addRootSlash: false,
+                starttag: '<!-- inject:vendor:{{ext}}-->'
+              }
+              )).pipe(gulp.dest('./build'));
+});
 
 gulp.task('injection', ['ls', 'stylus', 'jade', 'vendor'], function(){
   return gulp.src('./build/index.html')
   .pipe(inject(
-    gulp.src(paths.inject_js, {'cwd': __dirname + '/build'})
-    .pipe(angularFilesort()),
-    { addRootSlash: false }
-    ))
+               gulp.src(paths.inject_js, {'cwd': __dirname + '/build'})
+               .pipe(angularFilesort()),
+               { addRootSlash: false }
+               ))
   .pipe(inject(
-    gulp.src(paths.inject_css, {'cwd': __dirname + '/build'}), { addRootSlash: false }))
+               gulp.src(paths.inject_css, {'cwd': __dirname + '/build'}), { addRootSlash: false }))
   .pipe(gulp.dest('./build'));
-  });
+});
 
 gulp.task('wiredep', ['injection'], function(){
   return gulp.src('./build/index.html')
   .pipe(wiredep({
     directory: paths.bower_dir,
     devDependencies: true
-    }))
+  }))
   .pipe(gulp.dest('./build'));
-  });
+});
 
 gulp.task('clean_dist', ['build'], function () {
   return gulp.src('dist/', {read: false})
   .pipe(clean());
-  });
+});
 
 gulp.task('ls', function() {
   return gulp.src(paths.ls)
@@ -115,7 +116,7 @@ gulp.task('ls', function() {
   .pipe(livescript())
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'));
-  });
+});
 
 gulp.task('jade', function() {
   return gulp.src(paths.jade)
@@ -123,10 +124,10 @@ gulp.task('jade', function() {
   .pipe(gulpJade({
     jade: jade,
     pretty: true
-    }))
+  }))
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'))
-  });
+});
 
 gulp.task('stylus', function () {
   return gulp.src(paths.stylus)
@@ -134,7 +135,7 @@ gulp.task('stylus', function () {
   .pipe(stylus())
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'));
-  });
+});
 
 gulp.task('watch', ['build'], function () {
   gulp.watch(paths.src_vendor_files, ['vendor']);
@@ -142,7 +143,7 @@ gulp.task('watch', ['build'], function () {
   gulp.watch(paths.jade, ['inject-templates', 'injection', 'wiredep']);
   gulp.watch(paths.stylus, ['stylus']);
   gulp.watch(paths.bower_files, ['wiredep']);
-  });
+});
 
 gulp.task('usemin', ['clean_dist'], function() {
   return gulp.src('./build/index.html')
@@ -152,9 +153,9 @@ gulp.task('usemin', ['clean_dist'], function() {
     js: [ uglify({beautify: true, mangle: false}), rev() ],
     inlinejs: [ uglify({beautify:true, mangle: true}) ],
     inlinecss: [ minifyCss() ]
-    }))
+  }))
   .pipe(gulp.dest('./dist/'));
-  });
+});
 
 gulp.task('serve', ['watch'], function () {
   gulp.src('./build/')
@@ -164,11 +165,41 @@ gulp.task('serve', ['watch'], function () {
       filter: function (filename, cb) {
         cb(!/\.ls$|\.jade$|node_modules/.test(filename));
       }
-      },
-      directoryListing: false,
-      open: true
-      }));
-  });
+    },
+    directoryListing: false,
+    open: true
+  }));
+});
+
+gulp.task('serve-dist', ['dist'], function () {
+  gulp.src('./dist/')
+  .pipe(server({
+    livereload: {
+      enable: true,
+      port: 35730,
+      filter: function (filename, cb) {
+        cb(!/\.ls$|\.jade$|node_modules/.test(filename));
+      }
+    },
+    directoryListing: false,
+    open: true,
+    port: 8001
+  }));
+});
+
+/*=================================
+=            GENERATOR            =
+=================================*/
+
+dogen.config({
+  templatesPath: 'templates',
+  gulp: gulp
+});
+
+dogen.task('component', __dirname + '/src/app/');
+
+
+/*=====  End of GENERATOR  ======*/
 
 gulp.task('build', ['inject-templates', 'stylus', 'vendor', 'injection', 'wiredep']);
 gulp.task('dist', ['usemin']);

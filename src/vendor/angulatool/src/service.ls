@@ -1,10 +1,9 @@
 # TO create a new directive, simply pu the code below
 
 # new angulatool.service (
-#   name: \nomComponent
+#   name: \ComponentService
 #   inject: []
-#   template: ''
-#   func: (scope, elements, attrs)->
+#   func: ()->
 # )
 
 let
@@ -16,17 +15,22 @@ let
   window import prelude-ls
 
   service = (params) ->
-    @.name = params.name
-    @.inject = params.inject ++ capitalize(params.name) + "Service"
-    @.func = params.func
+    @name = params.name
+    @inject = params.inject
+    @callback = params.callback
 
-    @.init = ->
-      console.log @.inject ++ @.base(params.template, @.func)
-      @.injection?!
-      (angular.module \app.services).service params.name, @.inject ++ @.func
+    @base = (callback) ->
+      (...args) ~>
+        for toInjectInThis, j in params.inject
+          @[toInjectInThis] = args[j]
+        callback ...
 
+    @init = ->
+      console.log 'init service'
+      (angular.module \app.services).service params.name, @inject ++ [@base(@callback)]
 
-    @.init?!
+    @init?!
+
   angulatool.setService service
 
 

@@ -2,7 +2,7 @@ let
   'use strict'
   new angulatool.service do
 
-    name: \HomeService
+    name: \=component=Service
 
     inject: []
 

@@ -16,33 +16,26 @@ let
   window import prelude-ls
 
   directive = (params) ->
-    @.name = params.name
-    @.inject = params.inject ++ capitalize(params.name) + "Service"
-    @.callback = params.callback
+    @name = params.name
+    @inject = params.inject.scope ++ params.inject.self
+    @callback = params.callback
 
-    @.base = (template, link) ->
-      ->
-        params =
-          link: link
-          restrict: \E
-          template: template
+    @base = (template, link) ->
+      (...args) ~>
+        args = args |> filter (.0 isnt \$)
+        link: (scope) ~>
+          for toInjectInScope, i in params.inject.scope ++ capitalize(params.name) + "Service"
+            scope[toInjectInScope] = args[i]
+          for toInjectInThis, j in params.inject.self
+            @[toInjectInThis] = args[j]
+          link ...
+        restrict: \E
+        template: template
 
-    # @.init = (scope, elements, attrs) ->
-    #   console.log Array.prototype.slice.call(arguments)
+    @init = ->
+      console.log 'init directive'
+      (angular.module \app.directives).directive params.name, @inject ++ [@base(params.template, @callback)]
 
-    @.init = ->
-      # console.log @.inject ++ @.base(params.template, @.callback)
-      # @.callback.apply @, <[scope elements attrs]> ++ @.inject
-      # console.log @.callback.prototype.slice.call(arguments)
-      func = (inject, callback) ->
-        # Array.prototype.slice.call(arguments).push  ++ inject
-        callback.apply null, inject
-        # callback inject
+    @init?!
 
-      (angular.module \app.directives).directive params.name, @.inject ++ @.base(params.template, func(@.inject, @.callback))
-
-    @.init?!
   angulatool.setDirective directive
-
-
-
