@@ -7,6 +7,7 @@ angular
     * \app.resources
     * \app.constants
     * \ui.router
+    * \ui.bootstrap
   ]
   .config ($httpProvider) !->
     $httpProvider.defaults.headers

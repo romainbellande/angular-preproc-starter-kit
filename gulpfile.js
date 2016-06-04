@@ -35,6 +35,7 @@ var paths = {
   js: ['./build/app/**/*.js'],
   html: ['app/**/*.html'],
   css: ['assets/**/*.css', 'app/**/*.css'],
+  yml: ['src/app/**/*.yml'],
   maps: '.',
   bower_dir: './build/lib/',
   bower_files: './build/lib/**/*.*',
@@ -52,6 +53,11 @@ gulp.task('default', function() {
 gulp.task('copy-lib', function () {
   return gulp.src(paths.src_vendor_files)
   .pipe(copy('./build/vendor/'));
+});
+
+gulp.task('copy-yml', function () {
+  return gulp.src(paths.yml)
+  .pipe(copy('./build/', {prefix: 1}));
 });
 
 gulp.task('inject-templates', ['ls', 'jade'], function () {
@@ -150,7 +156,7 @@ gulp.task('usemin', ['clean_dist'], function() {
   .pipe(usemin({
     css: [ minifyCss(), rev() ],
     html: [ minifyHtml({collapseWhitespace: true}) ],
-    js: [ uglify({beautify: true, mangle: false}), rev() ],
+    js: [ uglify({mangle: false}), rev() ],
     inlinejs: [ uglify({beautify:true, mangle: true}) ],
     inlinecss: [ minifyCss() ]
   }))
@@ -197,14 +203,10 @@ dogen.config({
 });
 
 dogen.task('component', __dirname + '/src/app/');
+dogen.task('service', __dirname + '/src/app/');
 
 
 /*=====  End of GENERATOR  ======*/
 
-gulp.task('build', ['inject-templates', 'stylus', 'vendor', 'injection', 'wiredep']);
-gulp.task('dist', ['usemin']);
-
-
-
-
-
+gulp.task('build', ['copy-yml', 'inject-templates', 'stylus', 'vendor', 'injection', 'wiredep']);
+gulp.task('dist', ['copy-yml', 'usemin']);

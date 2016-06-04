@@ -26,8 +26,8 @@ let
         link: (scope) ~>
           for toInjectInScope, i in params.inject.scope ++ capitalize(params.name) + "Service"
             scope[toInjectInScope] = args[i]
-          for toInjectInThis, j in params.inject.self
-            @[toInjectInThis] = args[j]
+          for toInjectInSelf, j in params.inject.self
+            @[toInjectInSelf] = args[j]
           link ...
         restrict: \E
         template: template

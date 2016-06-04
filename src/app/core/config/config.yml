@@ -1,0 +1,12 @@
+env:
+  development:
+    baseUrl: http://MON_IP:3000
+
+  staging:
+    baseUrl: http://IP_STAGING:3000
+
+  prod:
+    baseUrl: http://IP_PROD:3000
+
+routes:
+  users: users/:user_id
