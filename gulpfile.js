@@ -29,41 +29,36 @@ escape          = require('js-string-escape'),
 dogen           = require('gulp-dogen');
 
 var paths = {
-  ls: ['./src/**/*.ls', './src/lib/**/*.ls'],
-  jade: ['./src/**/*.jade'],
-  stylus: ['./src/**/*.styl'],
-  js: ['./build/app/**/*.js'],
+  ls: ['!./src/server/node_modules', './src/**/*.ls', './src/client/lib/**/*.ls'],
+  jade: ['!./src/server/node_modules', './src/**/*.jade'],
+  stylus: ['!./src/server/node_modules', './src/**/*.styl'],
+  js: ['./build/client/app/**/*.js'],
   html: ['app/**/*.html'],
-  css: ['assets/**/*.css', 'app/**/*.css'],
-  yml: ['src/app/**/*.yml'],
+  css: ['client/assets/**/*.css', 'client/app/**/*.css'],
+  yml: ['!./src/server/node_modules','src/client/app/**/*.yml'],
   maps: '.',
-  bower_dir: './build/lib/',
-  bower_files: './build/lib/**/*.*',
+  bower_dir: './build/client/lib/',
+  bower_files: './build/client/lib/**/*.*',
   inject_js: ['!**/app.**.js', 'app/**/*.js'],
   inject_css: ['assets/**/*.css', 'app/**/*.css'],
-  src_vendor_files: ['!./src/vendor/**/*.ls', './src/vendor/**/*.*'],
+  src_vendor_files: ['!./src/client/vendor/**/*.ls', './src/client/vendor/**/*.*'],
   vendor_files: ['!vendor/prelude-ls/*', 'vendor/**/*.js', 'vendor/**/*.css'],
-  directives: ['./build/app/**/*Directive.js']
+  directives: ['./build/app/**/*Directive.js'],
+  server_package: 'server/package.json'
 };
 
-gulp.task('default', function() {
-  // place code for your default task here
-});
-
+/*==============================
+=            CLIENT            =
+==============================*/
 gulp.task('copy-lib', function () {
   return gulp.src(paths.src_vendor_files)
-  .pipe(copy('./build/vendor/'));
-});
-
-gulp.task('copy-yml', function () {
-  return gulp.src(paths.yml)
-  .pipe(copy('./build/', {prefix: 1}));
+  .pipe(copy('./build/client/vendor/'));
 });
 
 gulp.task('inject-templates', ['ls', 'jade'], function () {
   return gulp.src(paths.directives)
   .pipe(inject(
-               gulp.src(paths.html, {'cwd': __dirname + '/build'}),
+               gulp.src(paths.html, {'cwd': __dirname + '/build/client'}),
                {
       // addRootSlash: false,
       relative: true,
@@ -76,39 +71,73 @@ gulp.task('inject-templates', ['ls', 'jade'], function () {
         }
       }
     }
-    )).pipe(gulp.dest('./build/app/'));
+    )).pipe(gulp.dest('./build/client/app/'));
 });
 
 gulp.task('vendor', ['ls', 'jade'], function () {
-  return gulp.src('./build/index.html')
+  return gulp.src('./build/client/index.html')
   .pipe(inject(
-               gulp.src(paths.vendor_files, {'cwd': __dirname + '/build', 'read': false}),
+               gulp.src(paths.vendor_files, {'cwd': __dirname + '/build/client', 'read': false}),
                {
                 addRootSlash: false,
                 starttag: '<!-- inject:vendor:{{ext}}-->'
               }
-              )).pipe(gulp.dest('./build'));
+              )).pipe(gulp.dest('./build/client'));
 });
 
 gulp.task('injection', ['ls', 'stylus', 'jade', 'vendor'], function(){
-  return gulp.src('./build/index.html')
+  return gulp.src('./build/client/index.html')
   .pipe(inject(
-               gulp.src(paths.inject_js, {'cwd': __dirname + '/build'})
+               gulp.src(paths.inject_js, {'cwd': __dirname + '/build/client'})
                .pipe(angularFilesort()),
                { addRootSlash: false }
                ))
   .pipe(inject(
-               gulp.src(paths.inject_css, {'cwd': __dirname + '/build'}), { addRootSlash: false }))
-  .pipe(gulp.dest('./build'));
+               gulp.src(paths.inject_css, {'cwd': __dirname + '/build/client'}), { addRootSlash: false }))
+  .pipe(gulp.dest('./build/client'));
 });
 
 gulp.task('wiredep', ['injection'], function(){
-  return gulp.src('./build/index.html')
+  return gulp.src('./build/client/index.html')
   .pipe(wiredep({
     directory: paths.bower_dir,
     devDependencies: true
   }))
-  .pipe(gulp.dest('./build'));
+  .pipe(gulp.dest('./build/client'));
+});
+
+gulp.task('usemin', ['clean_dist'], function() {
+  return gulp.src('./build/index.html')
+  .pipe(usemin({
+    css: [ minifyCss(), rev() ],
+    html: [ minifyHtml({collapseWhitespace: true}) ],
+    js: [ uglify({mangle: false}), rev() ],
+    inlinejs: [ uglify({beautify:true, mangle: true}) ],
+    inlinecss: [ minifyCss() ]
+  }))
+  .pipe(gulp.dest('./dist/'));
+});
+
+/*=====  End of CLIENT  ======*/
+/*==============================
+=            SERVER            =
+==============================*/
+gulp.task('copy-package', function (){
+  return gulp.src('./src/' + paths.server_package)
+  .pipe(copy('./build/', {prefix: 1}));
+});
+
+
+/*=====  End of SERVER  ======*/
+
+/*==============================
+=            GLOBAL            =
+==============================*/
+
+
+gulp.task('copy-yml', function () {
+  return gulp.src(paths.yml)
+  .pipe(copy('./build/', {prefix: 1}));
 });
 
 gulp.task('clean_dist', ['build'], function () {
@@ -143,24 +172,14 @@ gulp.task('stylus', function () {
   .pipe(gulp.dest('./build/'));
 });
 
+/*=====  End of GLOBAL  ======*/
+
 gulp.task('watch', ['build'], function () {
   gulp.watch(paths.src_vendor_files, ['vendor']);
   gulp.watch(paths.ls, ['inject-templates', 'injection', 'wiredep']);
   gulp.watch(paths.jade, ['inject-templates', 'injection', 'wiredep']);
   gulp.watch(paths.stylus, ['stylus']);
   gulp.watch(paths.bower_files, ['wiredep']);
-});
-
-gulp.task('usemin', ['clean_dist'], function() {
-  return gulp.src('./build/index.html')
-  .pipe(usemin({
-    css: [ minifyCss(), rev() ],
-    html: [ minifyHtml({collapseWhitespace: true}) ],
-    js: [ uglify({mangle: false}), rev() ],
-    inlinejs: [ uglify({beautify:true, mangle: true}) ],
-    inlinecss: [ minifyCss() ]
-  }))
-  .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('serve', ['watch'], function () {
@@ -208,5 +227,5 @@ dogen.task('service', __dirname + '/src/app/');
 
 /*=====  End of GENERATOR  ======*/
 
-gulp.task('build', ['copy-yml', 'inject-templates', 'stylus', 'vendor', 'injection', 'wiredep']);
+gulp.task('build', ['copy-package', 'copy-yml', 'inject-templates', 'stylus', 'vendor', 'injection', 'wiredep']);
 gulp.task('dist', ['copy-yml', 'usemin']);
