@@ -26,7 +26,12 @@ tap             = require('gulp-tap'),
 fs              = require('fs'),
 minifyHtmlInput = require('html-minifier').minify,
 escape          = require('js-string-escape'),
-dogen           = require('gulp-dogen');
+dogen           = require('gulp-dogen'),
+nodemon         = require('gulp-nodemon'),
+notify          = require('gulp-notify'),
+browserSync    = require('browser-sync');
+
+var reload = browserSync.reload;
 
 var paths = {
   ls: ['!./src/server/node_modules', './src/**/*.ls', './src/client/lib/**/*.ls'],
@@ -44,7 +49,9 @@ var paths = {
   src_vendor_files: ['!./src/client/vendor/**/*.ls', './src/client/vendor/**/*.*'],
   vendor_files: ['!vendor/prelude-ls/*', 'vendor/**/*.js', 'vendor/**/*.css'],
   directives: ['./build/app/**/*Directive.js'],
-  server_package: 'server/package.json'
+  server_package: 'server/package.json',
+  server: './build/server/bin/server.js',
+  client: './build/client/index.html'
 };
 
 /*==============================
@@ -175,25 +182,57 @@ gulp.task('stylus', function () {
 /*=====  End of GLOBAL  ======*/
 
 gulp.task('watch', ['build'], function () {
-  gulp.watch(paths.src_vendor_files, ['vendor']);
-  gulp.watch(paths.ls, ['inject-templates', 'injection', 'wiredep']);
-  gulp.watch(paths.jade, ['inject-templates', 'injection', 'wiredep']);
-  gulp.watch(paths.stylus, ['stylus']);
+  gulp.watch(paths.src_vendor_files, ['wiredep']);
+  gulp.watch(paths.ls, ['stylus', 'inject-templates', 'wiredep']);
+  gulp.watch(paths.jade, ['inject-templates', 'wiredep']);
+  gulp.watch(paths.stylus, ['stylus', 'wiredep']);
   gulp.watch(paths.bower_files, ['wiredep']);
 });
 
-gulp.task('serve', ['watch'], function () {
-  gulp.src('./build/')
-  .pipe(server({
-    livereload: {
-      enable: true,
-      filter: function (filename, cb) {
-        cb(!/\.ls$|\.jade$|node_modules/.test(filename));
-      }
-    },
-    directoryListing: false,
-    open: true
-  }));
+// gulp.task('reload-server', function () {
+//   browserSync.reload()
+// });
+
+// gulp.task('serve', ['watch'], function () {
+//   gulp.src('./build/')
+//   .pipe(server({
+//     livereload: {
+//       enable: true,
+//       filter: function (filename, cb) {
+//         cb(!/\.ls$|\.jade$|node_modules/.test(filename));
+//       }
+//     },
+//     directoryListing: false,
+//     open: true
+//   }));
+// });
+gulp.task('serve', ['nodemon', 'watch'], function() {
+  browserSync.init({
+      files: ['./build/**/*.*'],
+      reloadDelay: 500,
+      proxy: "http://localhost:5000",
+      // files: [__dirname + "./build/client/**/*.*"],
+      // notify: false,
+      // reloadOnRestart: true,
+      open: false,
+      browser: "google chrome",
+      port: 7000,
+      proxy: "http://localhost:3000"
+  });
+});
+
+gulp.task('nodemon', function (cb) {
+  var started = false;
+  return nodemon({
+    script: paths.server
+  }).on('start', function () {
+    // to avoid nodemon being started multiple times
+    // thanks @matthisk
+    if (!started) {
+      cb();
+      started = true;
+    }
+  });
 });
 
 gulp.task('serve-dist', ['dist'], function () {
