@@ -8,14 +8,12 @@ cors = require \cors
 ejs = require \ejs
 mongoose = require \mongoose
 
-# index = require \./index
 app = express()
 
 app.set \env \development
 app.use(express.static(path.join(__dirname, \../client)))
 app.use cors()
 
-# app.use \/, index
 # development error handler
 # will print stacktrace
 if app.get \env === \development

@@ -189,10 +189,6 @@ gulp.task('watch', ['build'], function () {
   gulp.watch(paths.bower_files, ['wiredep']);
 });
 
-// gulp.task('reload-server', function () {
-//   browserSync.reload()
-// });
-
 // gulp.task('serve', ['watch'], function () {
 //   gulp.src('./build/')
 //   .pipe(server({
@@ -208,12 +204,10 @@ gulp.task('watch', ['build'], function () {
 // });
 gulp.task('serve', ['nodemon', 'watch'], function() {
   browserSync.init({
-      files: ['./build/**/*.*'],
-      reloadDelay: 500,
+      // files: ['./build/**/*.*'],
+      // reloadDelay: 500,
+      injectChanges: true,
       proxy: "http://localhost:5000",
-      // files: [__dirname + "./build/client/**/*.*"],
-      // notify: false,
-      // reloadOnRestart: true,
       open: false,
       browser: "google chrome",
       port: 7000,
