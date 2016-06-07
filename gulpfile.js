@@ -79,7 +79,7 @@ gulp.task('vendor', ['ls', 'jade'], function () {
   .pipe(inject(
                gulp.src(paths.vendor_files, {'cwd': __dirname + '/build/client', 'read': false}),
                {
-                addRootSlash: false,
+                // addRootSlash: false,
                 starttag: '<!-- inject:vendor:{{ext}}-->'
               }
               )).pipe(gulp.dest('./build/client'));
