@@ -110,7 +110,7 @@ gulp.task('wiredep', ['injection'], function(){
     directory: paths.bower_dir,
     devDependencies: true
   }))
-  .pipe(gulp.dest('./build/client'));
+  .pipe(gulp.dest('./build/client')).pipe(browserSync.stream({once: true}));
 });
 
 gulp.task('usemin', ['clean_dist'], function() {
@@ -205,7 +205,6 @@ gulp.task('watch', ['build'], function () {
 gulp.task('serve', ['nodemon', 'watch'], function() {
   browserSync.init({
       // files: ['./build/**/*.*'],
-      // reloadDelay: 500,
       injectChanges: true,
       proxy: "http://localhost:5000",
       open: false,
