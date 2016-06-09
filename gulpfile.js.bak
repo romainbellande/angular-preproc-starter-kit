@@ -1,14 +1,3 @@
-/**
-
-  TODO: [BUILD]
-  - compile all [ls, jade, stylus]
-  - inject all [inject-templates, injection, vendors, wiredep]
-  - copy yml
-  - copy server package.json & server npm install
-
- */
-
-
 var gulp        = require('gulp'),
 server          = require('gulp-server-livereload'),
 watch           = require('gulp-watch'),
@@ -65,39 +54,9 @@ var paths = {
   client: './build/client/index.html'
 };
 
-/*============================
-=            AUTO            =
-============================*/
-
-gulp.task('ls.c', function() {
-  return gulp.src(paths.ls)
-  .pipe(sourcemaps.init())
-  .pipe(livescript())
-  .pipe(sourcemaps.write(paths.maps))
-  .pipe(gulp.dest('./build/'));
-});
-
-gulp.task('jade.c', function() {
-  return gulp.src(paths.jade)
-  .pipe(sourcemaps.init())
-  .pipe(gulpJade({
-    jade: jade,
-    pretty: true
-  }))
-  .pipe(sourcemaps.write(paths.maps))
-  .pipe(gulp.dest('./build/'));
-});
-
-gulp.task('stylus.c', function () {
-  return gulp.src(paths.stylus)
-  .pipe(sourcemaps.init())
-  .pipe(stylus())
-  .pipe(sourcemaps.write(paths.maps))
-  .pipe(gulp.dest('./build/'));
-});
-
-/*=====  End of AUTO  ======*/
-
+/*==============================
+=            CLIENT            =
+==============================*/
 gulp.task('copy-lib', function () {
   return gulp.src(paths.src_vendor_files)
   .pipe(copy('./build/', {prefix: 1}));
@@ -193,12 +152,41 @@ gulp.task('clean_dist', ['build'], function () {
   .pipe(clean());
 });
 
+gulp.task('ls', function() {
+  return gulp.src(paths.ls)
+  .pipe(sourcemaps.init())
+  .pipe(livescript())
+  .pipe(sourcemaps.write(paths.maps))
+  .pipe(gulp.dest('./build/'));
+});
+
+gulp.task('jade', function() {
+  return gulp.src(paths.jade)
+  .pipe(sourcemaps.init())
+  .pipe(gulpJade({
+    jade: jade,
+    pretty: true
+  }))
+  .pipe(sourcemaps.write(paths.maps))
+  .pipe(gulp.dest('./build/'));
+});
+
+gulp.task('stylus', function () {
+  return gulp.src(paths.stylus)
+  .pipe(sourcemaps.init())
+  .pipe(stylus())
+  .pipe(sourcemaps.write(paths.maps))
+  .pipe(gulp.dest('./build/'));
+});
+
 /*=====  End of GLOBAL  ======*/
 
 gulp.task('watch', ['build'], function () {
-  gulp.watch(paths.ls, ['ls.c']);
-  gulp.watch(paths.jade, ['jade.c']);
-  gulp.watch(paths.stylus, ['stylus.c']);
+  gulp.watch(paths.src_vendor_files, ['wiredep']);
+  gulp.watch(paths.ls, ['stylus', 'inject-templates', 'wiredep']);
+  gulp.watch(paths.jade, ['reload-serve']);
+  gulp.watch(paths.stylus, ['stylus', 'wiredep']);
+  gulp.watch(paths.bower_files, ['wiredep']);
 });
 
 // gulp.task('serve', ['watch'], function () {
