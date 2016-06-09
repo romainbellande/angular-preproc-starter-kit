@@ -40,12 +40,14 @@ escape          = require('js-string-escape'),
 dogen           = require('gulp-dogen'),
 nodemon         = require('gulp-nodemon'),
 notify          = require('gulp-notify'),
-browserSync    = require('browser-sync').create();
+browserSync     = require('browser-sync').create(),
+shell           = require('gulp-shell'),
+exec            = require('child_process').exec;
 
 var reload = browserSync.reload;
 
 var paths = {
-  ls: ['!./src/server/bin/server.ls', '!./src/server/node_modules',  './src/client/**/*.ls'],
+  ls: ['!./src/server/node_modules',  './src/**/*.ls'],
   jade: ['!./src/server/node_modules', './src/**/*.jade'],
   stylus: ['!./src/server/node_modules', './src/**/*.styl'],
   js: ['./build/client/app/**/*.js'],
@@ -96,62 +98,134 @@ gulp.task('stylus.c', function () {
   .pipe(gulp.dest('./build/'));
 });
 
+gulp.task('compile', ['ls.c', 'jade.c', 'stylus.c']);
+
 /*=====  End of AUTO  ======*/
+
+/*==================================
+=            INJECTIONS            =
+==================================*/
+
+gulp.task('inject-html', ['jade.c'], function () {
+  return gulp.src(paths.directives)
+  .pipe(inject(
+   gulp.src(paths.html, {'cwd': __dirname + '/build/client'}),
+   {
+    // addRootSlash: false,
+    relative: true,
+    starttag: 'template: \'',
+    endtag: '\'',
+    transform: function (filePath, file, i, length, targetFile) {
+      if (filePath.indexOf('/') === -1) {
+        // console.log(', template: \"' + file.contents.toString('utf-8') + '\"');
+        return escape(minifyHtmlInput(file.contents.toString('utf-8'), {collapseWhitespace: true, preventAttributesEscaping: true}));
+      }
+    }
+  }
+  )).pipe(gulp.dest('./build/client/app/'));
+});
+
+gulp.task('inject-css', ['stylus.c'], function () {
+  return gulp.src('./build/client/index.html')
+  .pipe(
+    inject(
+      gulp.src(
+        paths.inject_css, {'cwd': __dirname + '/build/client'}
+      ),
+      {
+        addRootSlash: false
+      })
+    )
+  .pipe(gulp.dest('./build/client')).pipe(browserSync.stream());
+});
+
+gulp.task('inject-js', ['ls.c'], function () {
+  return gulp.src('./build/client/index.html')
+  .pipe(
+    inject(
+      gulp.src(
+        paths.inject_js, {'cwd': __dirname + '/build/client'}
+      )
+    .pipe(angularFilesort()),
+    {
+      addRootSlash: false
+    })
+  )
+  .pipe(gulp.dest('./build/client'));
+});
+
+gulp.task('inject-vendors', function () {
+  return gulp.src('./build/client/index.html')
+  .pipe(inject(
+    gulp.src(paths.vendor_files, {'cwd': __dirname + '/build/client', 'read': false}),
+    {
+      addRootSlash: false,
+      starttag: '<!-- inject:vendor:{{ext}}-->'
+    }
+  )).pipe(gulp.dest('./build/client'));
+});
+
+gulp.task('bower-install', function () {
+  return exec('bower install');
+});
+
+gulp.task('inject-bower', function(){
+  return gulp.src('./build/client/index.html')
+  .pipe(shell('bower install'))
+  .pipe(wiredep({
+    directory: paths.bower_dir,
+    devDependencies: true
+  }))
+  .pipe(gulp.dest('./build/client'));
+});
+
+gulp.task('injection', ['inject-html', 'inject-css', 'inject-js', 'inject-vendors', 'inject-bower']);
+/*=====  End of INJECTIONS  ======*/
+/*==============================
+=            OTHERS            =
+==============================*/
+
+gulp.task('copy-yml', function () {
+  return gulp.src(paths.yml)
+  .pipe(copy('./build/', {prefix: 1}));
+});
 
 gulp.task('copy-lib', function () {
   return gulp.src(paths.src_vendor_files)
   .pipe(copy('./build/', {prefix: 1}));
 });
 
-gulp.task('inject-templates', ['injection'], function () {
-  return gulp.src(paths.directives)
-  .pipe(inject(
-               gulp.src(paths.html, {'cwd': __dirname + '/build/client'}),
-               {
-      // addRootSlash: false,
-      relative: true,
-      starttag: 'template: \'',
-      endtag: '\'',
-      transform: function (filePath, file, i, length, targetFile) {
-        if (filePath.indexOf('/') === -1) {
-          // console.log(', template: \"' + file.contents.toString('utf-8') + '\"');
-          return escape(minifyHtmlInput(file.contents.toString('utf-8'), {collapseWhitespace: true, preventAttributesEscaping: true}));
-        }
-      }
-    }
-    )).pipe(gulp.dest('./build/client/app/'));
+gulp.task('copy-server-packages', function () {
+  return gulp.src('./src/' + paths.server_package)
+  .pipe(copy('./build/', {prefix: 1}));
 });
 
-gulp.task('vendor', ['ls', 'jade'], function () {
-  return gulp.src('./build/client/index.html')
-  .pipe(inject(
-               gulp.src(paths.vendor_files, {'cwd': __dirname + '/build/client', 'read': false}),
-               {
-                addRootSlash: false,
-                starttag: '<!-- inject:vendor:{{ext}}-->'
-              }
-              )).pipe(gulp.dest('./build/client'));
+gulp.task('install-server-packages', ['copy-server-packages'], function () {
+  return exec('npm install --prefix ./build/server');
 });
 
-gulp.task('injection', ['ls', 'stylus', 'jade', 'vendor'], function(){
-  return gulp.src('./build/client/index.html')
-  .pipe(inject(
-               gulp.src(paths.inject_js, {'cwd': __dirname + '/build/client'})
-               .pipe(angularFilesort()),
-               { addRootSlash: false }
-               ))
-  .pipe(inject(
-               gulp.src(paths.inject_css, {'cwd': __dirname + '/build/client'}), { addRootSlash: false }))
-  .pipe(gulp.dest('./build/client'));
+gulp.task('watch', ['build'], function () {
+  gulp.watch(paths.ls, ['ls.c', reload]);
+  gulp.watch(paths.jade, ['jade.c', reload]);
+  gulp.watch(paths.stylus, ['stylus.c']);
 });
 
-gulp.task('wiredep', ['inject-templates'], function(){
-  return gulp.src('./build/client/index.html')
-  .pipe(wiredep({
-    directory: paths.bower_dir,
-    devDependencies: true
-  }))
-  .pipe(gulp.dest('./build/client'));
+/*=====  End of OTHERS  ======*/
+/*=============================
+=            BUILD            =
+=============================*/
+
+gulp.task('build', ['compile', 'injection']);
+
+/*=====  End of BUILD  ======*/
+
+/*============================
+=            DIST            =
+============================*/
+
+gulp.task('clean_dist', ['build'], function () {
+  return gulp.src('dist/', {read: false})
+  .pipe(clean());
 });
 
 gulp.task('usemin', ['clean_dist'], function() {
@@ -166,54 +240,30 @@ gulp.task('usemin', ['clean_dist'], function() {
   .pipe(gulp.dest('./dist/'));
 });
 
-/*=====  End of CLIENT  ======*/
+gulp.task('dist', ['copy-yml', 'usemin']);
+
+/*=====  End of DIST  ======*/
+
 /*==============================
 =            SERVER            =
 ==============================*/
-gulp.task('copy-package', function (){
-  return gulp.src('./src/' + paths.server_package)
-  .pipe(copy('./build/', {prefix: 1}));
+
+gulp.task('nodemon', ['watch'], function (cb) {
+  var started = false;
+  return nodemon({
+    script: paths.server
+  }).on('start', function () {
+    if (!started) {
+      cb();
+      started = true;
+    }
+  });
 });
 
-
-/*=====  End of SERVER  ======*/
-
-/*==============================
-=            GLOBAL            =
-==============================*/
-
-
-gulp.task('copy-yml', function () {
-  return gulp.src(paths.yml)
-  .pipe(copy('./build/', {prefix: 1}));
+gulp.task('reload-serve', ['injection'], function () {
+  browserSync.reload();
 });
 
-gulp.task('clean_dist', ['build'], function () {
-  return gulp.src('dist/', {read: false})
-  .pipe(clean());
-});
-
-/*=====  End of GLOBAL  ======*/
-
-gulp.task('watch', ['build'], function () {
-  gulp.watch(paths.ls, ['ls.c']);
-  gulp.watch(paths.jade, ['jade.c']);
-  gulp.watch(paths.stylus, ['stylus.c']);
-});
-
-// gulp.task('serve', ['watch'], function () {
-//   gulp.src('./build/')
-//   .pipe(server({
-//     livereload: {
-//       enable: true,
-//       filter: function (filename, cb) {
-//         cb(!/\.ls$|\.jade$|node_modules/.test(filename));
-//       }
-//     },
-//     directoryListing: false,
-//     open: true
-//   }));
-// });
 gulp.task('serve', ['nodemon'], function() {
   browserSync.init({
       proxy: "http://localhost:5000",
@@ -223,35 +273,17 @@ gulp.task('serve', ['nodemon'], function() {
       proxy: "http://localhost:3000",
       notify: false,
       reloadDelay: 500
-      // ghostMode: false
-  });
-
-  // gulp.watch("./build/client/index.html").on("change", reload);
-});
-
-gulp.task('reload-serve', ['wiredep'], function () {
-  browserSync.reload();
-  //   browserSync.watch("./build/**/*.*", function (event, file) {
-  //   if (event === "change" && file === "build/client/index.html") {
-  //     // setTimeout(function(){ browserSync.reload(); }, 200);
-
-  //   }
-  // });
-});
-
-gulp.task('nodemon', ['watch'], function (cb) {
-  var started = false;
-  return nodemon({
-    script: paths.server
-  }).on('start', function () {
-    // to avoid nodemon being started multiple times
-    // thanks @matthisk
-    if (!started) {
-      cb();
-      started = true;
-    }
   });
 });
+
+/*=====  End of SERVER  ======*/
+
+/*==============================
+=            GLOBAL            =
+==============================*/
+
+
+/*=====  End of GLOBAL  ======*/
 
 gulp.task('serve-dist', ['dist'], function () {
   gulp.src('./dist/')
@@ -281,8 +313,5 @@ dogen.config({
 dogen.task('component', __dirname + '/src/app/');
 dogen.task('service', __dirname + '/src/app/');
 
-
 /*=====  End of GENERATOR  ======*/
 
-gulp.task('build', ['copy-package', 'copy-yml', 'inject-templates', 'stylus', 'vendor', 'injection', 'wiredep']);
-gulp.task('dist', ['copy-yml', 'usemin']);
