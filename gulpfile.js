@@ -42,13 +42,16 @@ nodemon         = require('gulp-nodemon'),
 notify          = require('gulp-notify'),
 browserSync     = require('browser-sync').create(),
 shell           = require('gulp-shell'),
-exec            = require('child_process').exec;
+exec            = require('child_process').exec,
+bower           = require('gulp-bower'),
+runSequence     = require('run-sequence');
 
 var reload = browserSync.reload;
 
 var paths = {
   ls: ['!./src/server/node_modules',  './src/**/*.ls'],
   jade: ['!./src/server/node_modules', './src/**/*.jade'],
+  jade_index: './src/client/index.jade',
   stylus: ['!./src/server/node_modules', './src/**/*.styl'],
   js: ['./build/client/app/**/*.js'],
   html: ['app/**/*.html'],
@@ -98,6 +101,17 @@ gulp.task('stylus.c', function () {
   .pipe(gulp.dest('./build/'));
 });
 
+gulp.task('compile-jade-index', ['compile'], function () {
+  return gulp.src(paths.jade_index)
+  .pipe(sourcemaps.init())
+  .pipe(gulpJade({
+    jade: jade,
+    pretty: true
+  }))
+  .pipe(sourcemaps.write(paths.maps))
+  .pipe(gulp.dest('./build/'));
+})
+
 gulp.task('compile', ['ls.c', 'jade.c', 'stylus.c']);
 
 /*=====  End of AUTO  ======*/
@@ -125,7 +139,7 @@ gulp.task('inject-html', ['jade.c'], function () {
   )).pipe(gulp.dest('./build/client/app/'));
 });
 
-gulp.task('inject-css', ['stylus.c'], function () {
+gulp.task('inject-css', function () {
   return gulp.src('./build/client/index.html')
   .pipe(
     inject(
@@ -154,7 +168,7 @@ gulp.task('inject-js', ['ls.c'], function () {
   .pipe(gulp.dest('./build/client'));
 });
 
-gulp.task('inject-vendors', function () {
+gulp.task('inject-vendors', ['copy-vendors'], function () {
   return gulp.src('./build/client/index.html')
   .pipe(inject(
     gulp.src(paths.vendor_files, {'cwd': __dirname + '/build/client', 'read': false}),
@@ -165,13 +179,12 @@ gulp.task('inject-vendors', function () {
   )).pipe(gulp.dest('./build/client'));
 });
 
-gulp.task('bower-install', function () {
-  return exec('bower install');
+gulp.task('bower', function() {
+  return bower();
 });
 
-gulp.task('inject-bower', function(){
+gulp.task('inject-bower', ['bower'], function() {
   return gulp.src('./build/client/index.html')
-  .pipe(shell('bower install'))
   .pipe(wiredep({
     directory: paths.bower_dir,
     devDependencies: true
@@ -190,7 +203,7 @@ gulp.task('copy-yml', function () {
   .pipe(copy('./build/', {prefix: 1}));
 });
 
-gulp.task('copy-lib', function () {
+gulp.task('copy-vendors', function () {
   return gulp.src(paths.src_vendor_files)
   .pipe(copy('./build/', {prefix: 1}));
 });
@@ -205,8 +218,8 @@ gulp.task('install-server-packages', ['copy-server-packages'], function () {
 });
 
 gulp.task('watch', ['build'], function () {
-  gulp.watch(paths.ls, ['ls.c', reload]);
-  gulp.watch(paths.jade, ['jade.c', reload]);
+  gulp.watch(paths.ls, ['inject-js', reload]);
+  gulp.watch(paths.jade, ['inject-html', reload]);
   gulp.watch(paths.stylus, ['stylus.c']);
 });
 
@@ -215,7 +228,13 @@ gulp.task('watch', ['build'], function () {
 =            BUILD            =
 =============================*/
 
-gulp.task('build', ['compile', 'injection']);
+
+gulp.task('build', function (callback) {
+  runSequence('compile',
+    ['injection', 'copy-yml'],
+    callback
+  );
+});
 
 /*=====  End of BUILD  ======*/
 
