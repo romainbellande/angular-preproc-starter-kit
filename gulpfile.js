@@ -29,12 +29,12 @@ escape          = require('js-string-escape'),
 dogen           = require('gulp-dogen'),
 nodemon         = require('gulp-nodemon'),
 notify          = require('gulp-notify'),
-browserSync    = require('browser-sync');
+browserSync    = require('browser-sync').create();
 
 var reload = browserSync.reload;
 
 var paths = {
-  ls: ['!./src/server/node_modules', './src/**/*.ls', './src/client/lib/**/*.ls'],
+  ls: ['!./src/server/bin/server.ls', '!./src/server/node_modules',  './src/client/**/*.ls'],
   jade: ['!./src/server/node_modules', './src/**/*.jade'],
   stylus: ['!./src/server/node_modules', './src/**/*.styl'],
   js: ['./build/client/app/**/*.js'],
@@ -59,10 +59,10 @@ var paths = {
 ==============================*/
 gulp.task('copy-lib', function () {
   return gulp.src(paths.src_vendor_files)
-  .pipe(copy('./build/client/vendor/'));
+  .pipe(copy('./build/', {prefix: 1}));
 });
 
-gulp.task('inject-templates', ['ls', 'jade'], function () {
+gulp.task('inject-templates', ['injection'], function () {
   return gulp.src(paths.directives)
   .pipe(inject(
                gulp.src(paths.html, {'cwd': __dirname + '/build/client'}),
@@ -86,7 +86,7 @@ gulp.task('vendor', ['ls', 'jade'], function () {
   .pipe(inject(
                gulp.src(paths.vendor_files, {'cwd': __dirname + '/build/client', 'read': false}),
                {
-                // addRootSlash: false,
+                addRootSlash: false,
                 starttag: '<!-- inject:vendor:{{ext}}-->'
               }
               )).pipe(gulp.dest('./build/client'));
@@ -104,13 +104,13 @@ gulp.task('injection', ['ls', 'stylus', 'jade', 'vendor'], function(){
   .pipe(gulp.dest('./build/client'));
 });
 
-gulp.task('wiredep', ['injection'], function(){
+gulp.task('wiredep', ['inject-templates'], function(){
   return gulp.src('./build/client/index.html')
   .pipe(wiredep({
     directory: paths.bower_dir,
     devDependencies: true
   }))
-  .pipe(gulp.dest('./build/client')).pipe(browserSync.stream({once: true}));
+  .pipe(gulp.dest('./build/client'));
 });
 
 gulp.task('usemin', ['clean_dist'], function() {
@@ -168,7 +168,7 @@ gulp.task('jade', function() {
     pretty: true
   }))
   .pipe(sourcemaps.write(paths.maps))
-  .pipe(gulp.dest('./build/'))
+  .pipe(gulp.dest('./build/'));
 });
 
 gulp.task('stylus', function () {
@@ -184,7 +184,7 @@ gulp.task('stylus', function () {
 gulp.task('watch', ['build'], function () {
   gulp.watch(paths.src_vendor_files, ['wiredep']);
   gulp.watch(paths.ls, ['stylus', 'inject-templates', 'wiredep']);
-  gulp.watch(paths.jade, ['inject-templates', 'wiredep']);
+  gulp.watch(paths.jade, ['reload-serve']);
   gulp.watch(paths.stylus, ['stylus', 'wiredep']);
   gulp.watch(paths.bower_files, ['wiredep']);
 });
@@ -202,19 +202,32 @@ gulp.task('watch', ['build'], function () {
 //     open: true
 //   }));
 // });
-gulp.task('serve', ['nodemon', 'watch'], function() {
+gulp.task('serve', ['nodemon'], function() {
   browserSync.init({
-      // files: ['./build/**/*.*'],
-      injectChanges: true,
       proxy: "http://localhost:5000",
       open: false,
       browser: "google chrome",
       port: 7000,
-      proxy: "http://localhost:3000"
+      proxy: "http://localhost:3000",
+      notify: false,
+      reloadDelay: 500
+      // ghostMode: false
   });
+
+  // gulp.watch("./build/client/index.html").on("change", reload);
 });
 
-gulp.task('nodemon', function (cb) {
+gulp.task('reload-serve', ['wiredep'], function () {
+  browserSync.reload();
+  //   browserSync.watch("./build/**/*.*", function (event, file) {
+  //   if (event === "change" && file === "build/client/index.html") {
+  //     // setTimeout(function(){ browserSync.reload(); }, 200);
+
+  //   }
+  // });
+});
+
+gulp.task('nodemon', ['watch'], function (cb) {
   var started = false;
   return nodemon({
     script: paths.server
