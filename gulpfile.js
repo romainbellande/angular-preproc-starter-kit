@@ -231,7 +231,7 @@ gulp.task('watch', ['build'], function () {
 
 gulp.task('build', function (callback) {
   runSequence('compile',
-    ['injection', 'copy-yml'],
+    ['injection', 'copy-yml', 'install-server-packages'],
     callback
   );
 });
@@ -285,13 +285,13 @@ gulp.task('reload-serve', ['injection'], function () {
 
 gulp.task('serve', ['nodemon'], function() {
   browserSync.init({
-      proxy: "http://localhost:5000",
-      open: false,
-      browser: "google chrome",
-      port: 7000,
-      proxy: "http://localhost:3000",
-      notify: false,
-      reloadDelay: 500
+    proxy: "http://localhost:5000",
+    open: true,
+    browser: "google chrome",
+    port: 7000,
+    proxy: "http://localhost:3000",
+    notify: false,
+    reloadDelay: 500
   });
 });
 
