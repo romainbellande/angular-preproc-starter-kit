@@ -50,7 +50,7 @@ var reload = browserSync.reload;
 
 var paths = {
   ls: ['!./src/server/node_modules',  './src/**/*.ls'],
-  jade: ['!./src/server/node_modules', './src/**/*.jade'],
+  jade: ['!./src/client/index.jade', '!./src/server/node_modules', './src/**/*.jade'],
   jade_index: './src/client/index.jade',
   stylus: ['!./src/server/node_modules', './src/**/*.styl'],
   js: ['./build/client/app/**/*.js'],
@@ -64,7 +64,7 @@ var paths = {
   inject_css: ['assets/**/*.css', 'app/**/*.css'],
   src_vendor_files: ['!./src/client/vendor/**/*.ls', './src/client/vendor/**/*.*'],
   vendor_files: ['!vendor/prelude-ls/*', 'vendor/**/*.js', 'vendor/**/*.css'],
-  directives: ['./build/app/**/*Directive.js'],
+  directives: ['./build/client/app/**/*Directive.js'],
   server_package: 'server/package.json',
   server: './build/server/bin/server.js',
   client: './build/client/index.html'
@@ -78,6 +78,17 @@ gulp.task('ls.c', function() {
   return gulp.src(paths.ls)
   .pipe(sourcemaps.init())
   .pipe(livescript())
+  .pipe(sourcemaps.write(paths.maps))
+  .pipe(gulp.dest('./build/'));
+});
+
+gulp.task('index.c', function () {
+  return gulp.src(paths.jade_index)
+  .pipe(sourcemaps.init())
+  .pipe(gulpJade({
+    jade: jade,
+    pretty: true
+  }))
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'));
 });
@@ -112,7 +123,7 @@ gulp.task('compile-jade-index', ['compile'], function () {
   .pipe(gulp.dest('./build/'));
 })
 
-gulp.task('compile', ['ls.c', 'jade.c', 'stylus.c']);
+gulp.task('compile', ['index.c', 'ls.c', 'jade.c', 'stylus.c']);
 
 /*=====  End of AUTO  ======*/
 
@@ -120,7 +131,7 @@ gulp.task('compile', ['ls.c', 'jade.c', 'stylus.c']);
 =            INJECTIONS            =
 ==================================*/
 
-gulp.task('inject-html', ['jade.c'], function () {
+gulp.task('inject-html', function () {
   return gulp.src(paths.directives)
   .pipe(inject(
    gulp.src(paths.html, {'cwd': __dirname + '/build/client'}),
@@ -153,7 +164,7 @@ gulp.task('inject-css', function () {
   .pipe(gulp.dest('./build/client')).pipe(browserSync.stream());
 });
 
-gulp.task('inject-js', ['ls.c'], function () {
+gulp.task('inject-js', function () {
   return gulp.src('./build/client/index.html')
   .pipe(
     inject(
@@ -217,13 +228,27 @@ gulp.task('install-server-packages', ['copy-server-packages'], function () {
   return exec('npm install --prefix ./build/server');
 });
 
+/*=====  End of OTHERS  ======*/
+/*================================
+=            WATCHERS            =
+================================*/
+
+gulp.task('watch-ls', function (callback) {
+  runSequence('ls.c', 'inject-js', callback);
+});
+
+gulp.task('watch-html', function (callback) {
+  runSequence('jade.c', 'inject-html', callback);
+});
+
 gulp.task('watch', ['build'], function () {
-  gulp.watch(paths.ls, ['inject-js', reload]);
-  gulp.watch(paths.jade, ['inject-html', reload]);
+  gulp.watch(paths.ls, ['watch-ls', reload]);
+  gulp.watch(paths.jade, ['watch-html', reload]);
   gulp.watch(paths.stylus, ['stylus.c']);
 });
 
-/*=====  End of OTHERS  ======*/
+/*=====  End of WATCHERS  ======*/
+
 /*=============================
 =            BUILD            =
 =============================*/
@@ -329,8 +354,8 @@ dogen.config({
   gulp: gulp
 });
 
-dogen.task('component', __dirname + '/src/app/');
-dogen.task('service', __dirname + '/src/app/');
+dogen.task('component', __dirname + '/src/client/app/');
+dogen.task('service', __dirname + '/src/client/app/');
 
 /*=====  End of GENERATOR  ======*/
 
