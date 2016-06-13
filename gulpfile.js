@@ -242,7 +242,7 @@ gulp.task('install-server-packages', ['copy-server-packages'], function () {
 ================================*/
 
 gulp.task('watch-ls', function (callback) {
-  runSequence('ls.c', 'inject-js', callback);
+  runSequence('ls.c', 'inject-js','inject-html',callback);
   });
 
 gulp.task('watch-jade', function (callback) {
@@ -326,7 +326,7 @@ gulp.task('serve', ['nodemon'], function() {
     port: 7000,
     proxy: "http://localhost:3000",
     notify: false,
-    reloadDelay: 500
+    reloadDelay: 2000
     });
   });
 
