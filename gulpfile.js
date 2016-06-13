@@ -6,69 +6,69 @@
   - copy yml
   - copy server package.json & server npm install
 
- */
+  */
 
 
-var gulp        = require('gulp'),
-server          = require('gulp-server-livereload'),
-watch           = require('gulp-watch'),
-stylus          = require('gulp-stylus'),
-gulpJade        = require('gulp-jade'),
-jade            = require('jade'),
-livescript      = require('gulp-livescript'),
-livereload      = require('gulp-livereload'),
-sourcemaps      = require('gulp-sourcemaps'),
-angularFilesort = require('gulp-angular-filesort'),
-inject          = require('gulp-inject'),
-wiredep         = require('wiredep').stream,
-usemin          = require('gulp-usemin'),
-minifyCss       = require('gulp-clean-css'),
-concat          = require('gulp-concat'),
-concatCss       = require('gulp-concat-css'),
-uglify          = require('gulp-uglify'),
-rev             = require('gulp-rev'),
-minifyHtml      = require('gulp-htmlmin'),
-clean           = require('gulp-clean'),
-copy            = require('gulp-copy'),
-gutil           = require('gulp-util'),
-vinylPaths      = require('vinyl-paths'),
-debug           = require('gulp-debug'),
-tap             = require('gulp-tap'),
-fs              = require('fs'),
-minifyHtmlInput = require('html-minifier').minify,
-escape          = require('js-string-escape'),
-dogen           = require('gulp-dogen'),
-nodemon         = require('gulp-nodemon'),
-notify          = require('gulp-notify'),
-browserSync     = require('browser-sync').create(),
-shell           = require('gulp-shell'),
-exec            = require('child_process').exec,
-bower           = require('gulp-bower'),
-runSequence     = require('run-sequence');
+  var gulp        = require('gulp'),
+  server          = require('gulp-server-livereload'),
+  watch           = require('gulp-watch'),
+  stylus          = require('gulp-stylus'),
+  gulpJade        = require('gulp-jade'),
+  jade            = require('jade'),
+  livescript      = require('gulp-livescript'),
+  livereload      = require('gulp-livereload'),
+  sourcemaps      = require('gulp-sourcemaps'),
+  angularFilesort = require('gulp-angular-filesort'),
+  inject          = require('gulp-inject'),
+  wiredep         = require('wiredep').stream,
+  usemin          = require('gulp-usemin'),
+  minifyCss       = require('gulp-clean-css'),
+  concat          = require('gulp-concat'),
+  concatCss       = require('gulp-concat-css'),
+  uglify          = require('gulp-uglify'),
+  rev             = require('gulp-rev'),
+  minifyHtml      = require('gulp-htmlmin'),
+  clean           = require('gulp-clean'),
+  copy            = require('gulp-copy'),
+  gutil           = require('gulp-util'),
+  vinylPaths      = require('vinyl-paths'),
+  debug           = require('gulp-debug'),
+  tap             = require('gulp-tap'),
+  fs              = require('fs'),
+  minifyHtmlInput = require('html-minifier').minify,
+  escape          = require('js-string-escape'),
+  dogen           = require('gulp-dogen'),
+  nodemon         = require('gulp-nodemon'),
+  notify          = require('gulp-notify'),
+  browserSync     = require('browser-sync').create(),
+  shell           = require('gulp-shell'),
+  exec            = require('child_process').exec,
+  bower           = require('gulp-bower'),
+  runSequence     = require('run-sequence');
 
-var reload = browserSync.reload;
+  var reload = browserSync.reload;
 
-var paths = {
-  ls: ['!./src/server/node_modules',  './src/**/*.ls'],
-  jade: ['!./src/client/index.jade', '!./src/server/node_modules', './src/**/*.jade'],
-  jade_index: './src/client/index.jade',
-  stylus: ['!./src/server/node_modules', './src/**/*.styl'],
-  js: ['./build/client/app/**/*.js'],
-  html: ['app/**/*.html'],
-  css: ['client/assets/**/*.css', 'client/app/**/*.css'],
-  yml: ['!./src/server/node_modules','src/client/app/**/*.yml'],
-  maps: '.',
-  bower_dir: './build/client/lib/',
-  bower_files: './build/client/lib/**/*.*',
-  inject_js: ['!**/app.**.js', 'app/**/*.js'],
-  inject_css: ['assets/**/*.css', 'app/**/*.css'],
-  src_vendor_files: ['!./src/client/vendor/**/*.ls', './src/client/vendor/**/*.*'],
-  vendor_files: ['!vendor/prelude-ls/*', 'vendor/**/*.js', 'vendor/**/*.css'],
-  directives: ['./build/client/app/**/*Directive.js'],
-  server_package: 'server/package.json',
-  server: './build/server/bin/server.js',
-  client: './build/client/index.html'
-};
+  var paths = {
+    ls: ['!./src/server/node_modules',  './src/**/*.ls'],
+    jade: ['!./src/client/index.jade', '!./src/server/node_modules', './src/**/*.jade'],
+    jade_index: './src/client/index.jade',
+    stylus: ['!./src/server/node_modules', './src/**/*.styl'],
+    js: ['./build/client/app/**/*.js'],
+    html: ['app/**/*.html'],
+    css: ['client/assets/**/*.css', 'client/app/**/*.css'],
+    yml: ['!./src/server/node_modules','src/client/app/**/*.yml'],
+    maps: '.',
+    bower_dir: './build/client/lib/',
+    bower_files: './build/client/lib/**/*.*',
+    inject_js: ['!**/app.**.js', 'app/**/*.js'],
+    inject_css: ['assets/**/*.css', 'app/**/*.css'],
+    src_vendor_files: ['!./src/client/vendor/**/*.ls', './src/client/vendor/**/*.*'],
+    vendor_files: ['!vendor/prelude-ls/*', 'vendor/**/*.js', 'vendor/**/*.css'],
+    directives: ['./build/client/app/**/*Directive.js'],
+    server_package: 'server/package.json',
+    server: './build/server/bin/server.js',
+    client: './build/client/index.html'
+  };
 
 /*============================
 =            AUTO            =
@@ -80,7 +80,7 @@ gulp.task('ls.c', function() {
   .pipe(livescript())
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'));
-});
+  });
 
 gulp.task('index.c', function () {
   return gulp.src(paths.jade_index)
@@ -88,10 +88,10 @@ gulp.task('index.c', function () {
   .pipe(gulpJade({
     jade: jade,
     pretty: true
-  }))
+    }))
   .pipe(sourcemaps.write(paths.maps))
-  .pipe(gulp.dest('./build/'));
-});
+  .pipe(gulp.dest('./build/client/'));
+  });
 
 gulp.task('jade.c', function() {
   return gulp.src(paths.jade)
@@ -99,10 +99,10 @@ gulp.task('jade.c', function() {
   .pipe(gulpJade({
     jade: jade,
     pretty: true
-  }))
+    }))
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'));
-});
+  });
 
 gulp.task('stylus.c', function () {
   return gulp.src(paths.stylus)
@@ -110,7 +110,7 @@ gulp.task('stylus.c', function () {
   .pipe(stylus())
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'));
-});
+  });
 
 gulp.task('compile-jade-index', ['compile'], function () {
   return gulp.src(paths.jade_index)
@@ -118,12 +118,12 @@ gulp.task('compile-jade-index', ['compile'], function () {
   .pipe(gulpJade({
     jade: jade,
     pretty: true
-  }))
+    }))
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'));
-})
+  })
 
-gulp.task('compile', ['index.c', 'ls.c', 'jade.c', 'stylus.c']);
+gulp.task('compile', ['ls.c', 'jade.c', 'stylus.c']);
 
 /*=====  End of AUTO  ======*/
 
@@ -148,7 +148,7 @@ gulp.task('inject-html', function () {
     }
   }
   )).pipe(gulp.dest('./build/client/app/'));
-});
+  });
 
 gulp.task('inject-css', function () {
   return gulp.src('./build/client/index.html')
@@ -156,13 +156,13 @@ gulp.task('inject-css', function () {
     inject(
       gulp.src(
         paths.inject_css, {'cwd': __dirname + '/build/client'}
-      ),
+        ),
       {
         addRootSlash: false
-      })
+        })
     )
   .pipe(gulp.dest('./build/client')).pipe(browserSync.stream());
-});
+  });
 
 gulp.task('inject-js', function () {
   return gulp.src('./build/client/index.html')
@@ -170,14 +170,14 @@ gulp.task('inject-js', function () {
     inject(
       gulp.src(
         paths.inject_js, {'cwd': __dirname + '/build/client'}
-      )
-    .pipe(angularFilesort()),
-    {
-      addRootSlash: false
-    })
-  )
+        )
+      .pipe(angularFilesort()),
+      {
+        addRootSlash: false
+        })
+    )
   .pipe(gulp.dest('./build/client'));
-});
+  });
 
 gulp.task('inject-vendors', ['copy-vendors'], function () {
   return gulp.src('./build/client/index.html')
@@ -187,23 +187,31 @@ gulp.task('inject-vendors', ['copy-vendors'], function () {
       addRootSlash: false,
       starttag: '<!-- inject:vendor:{{ext}}-->'
     }
-  )).pipe(gulp.dest('./build/client'));
-});
+    )).pipe(gulp.dest('./build/client'));
+  });
 
 gulp.task('bower', function() {
   return bower();
-});
+  });
 
 gulp.task('inject-bower', ['bower'], function() {
   return gulp.src('./build/client/index.html')
   .pipe(wiredep({
     directory: paths.bower_dir,
     devDependencies: true
-  }))
+    }))
   .pipe(gulp.dest('./build/client'));
-});
+  });
 
-gulp.task('injection', ['inject-html', 'inject-css', 'inject-js', 'inject-vendors', 'inject-bower']);
+gulp.task('injection', function (callback) {
+  runSequence(
+    'inject-js',
+    'inject-css',
+    ['inject-html', 'inject-vendors', 'inject-bower'],
+    callback
+    );
+  });
+
 /*=====  End of INJECTIONS  ======*/
 /*==============================
 =            OTHERS            =
@@ -212,21 +220,21 @@ gulp.task('injection', ['inject-html', 'inject-css', 'inject-js', 'inject-vendor
 gulp.task('copy-yml', function () {
   return gulp.src(paths.yml)
   .pipe(copy('./build/', {prefix: 1}));
-});
+  });
 
 gulp.task('copy-vendors', function () {
   return gulp.src(paths.src_vendor_files)
   .pipe(copy('./build/', {prefix: 1}));
-});
+  });
 
 gulp.task('copy-server-packages', function () {
   return gulp.src('./src/' + paths.server_package)
   .pipe(copy('./build/', {prefix: 1}));
-});
+  });
 
 gulp.task('install-server-packages', ['copy-server-packages'], function () {
   return exec('npm install --prefix ./build/server');
-});
+  });
 
 /*=====  End of OTHERS  ======*/
 /*================================
@@ -235,17 +243,17 @@ gulp.task('install-server-packages', ['copy-server-packages'], function () {
 
 gulp.task('watch-ls', function (callback) {
   runSequence('ls.c', 'inject-js', callback);
-});
+  });
 
-gulp.task('watch-html', function (callback) {
+gulp.task('watch-jade', function (callback) {
   runSequence('jade.c', 'inject-html', callback);
-});
+  });
 
 gulp.task('watch', ['build'], function () {
   gulp.watch(paths.ls, ['watch-ls', reload]);
-  gulp.watch(paths.jade, ['watch-html', reload]);
+  gulp.watch(paths.jade, ['watch-jade', reload]);
   gulp.watch(paths.stylus, ['stylus.c']);
-});
+  });
 
 /*=====  End of WATCHERS  ======*/
 
@@ -255,11 +263,13 @@ gulp.task('watch', ['build'], function () {
 
 
 gulp.task('build', function (callback) {
-  runSequence('compile',
+  runSequence(
+    'index.c',
+    'compile',
     ['injection', 'copy-yml', 'install-server-packages'],
     callback
-  );
-});
+    );
+  });
 
 /*=====  End of BUILD  ======*/
 
@@ -270,7 +280,7 @@ gulp.task('build', function (callback) {
 gulp.task('clean_dist', ['build'], function () {
   return gulp.src('dist/', {read: false})
   .pipe(clean());
-});
+  });
 
 gulp.task('usemin', ['clean_dist'], function() {
   return gulp.src('./build/index.html')
@@ -280,9 +290,9 @@ gulp.task('usemin', ['clean_dist'], function() {
     js: [ uglify({mangle: false}), rev() ],
     inlinejs: [ uglify({beautify:true, mangle: true}) ],
     inlinecss: [ minifyCss() ]
-  }))
+    }))
   .pipe(gulp.dest('./dist/'));
-});
+  });
 
 gulp.task('dist', ['copy-yml', 'usemin']);
 
@@ -296,17 +306,17 @@ gulp.task('nodemon', ['watch'], function (cb) {
   var started = false;
   return nodemon({
     script: paths.server
-  }).on('start', function () {
-    if (!started) {
-      cb();
-      started = true;
-    }
-  });
-});
+    }).on('start', function () {
+      if (!started) {
+        cb();
+        started = true;
+      }
+      });
+    });
 
 gulp.task('reload-serve', ['injection'], function () {
   browserSync.reload();
-});
+  });
 
 gulp.task('serve', ['nodemon'], function() {
   browserSync.init({
@@ -317,8 +327,8 @@ gulp.task('serve', ['nodemon'], function() {
     proxy: "http://localhost:3000",
     notify: false,
     reloadDelay: 500
+    });
   });
-});
 
 /*=====  End of SERVER  ======*/
 
@@ -338,12 +348,12 @@ gulp.task('serve-dist', ['dist'], function () {
       filter: function (filename, cb) {
         cb(!/\.ls$|\.jade$|node_modules/.test(filename));
       }
-    },
-    directoryListing: false,
-    open: true,
-    port: 8001
-  }));
-});
+      },
+      directoryListing: false,
+      open: true,
+      port: 8001
+      }));
+  });
 
 /*=================================
 =            GENERATOR            =
@@ -352,7 +362,7 @@ gulp.task('serve-dist', ['dist'], function () {
 dogen.config({
   templatesPath: 'templates',
   gulp: gulp
-});
+  });
 
 dogen.task('component', __dirname + '/src/client/app/');
 dogen.task('service', __dirname + '/src/client/app/');
