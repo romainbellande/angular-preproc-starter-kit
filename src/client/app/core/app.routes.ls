@@ -3,7 +3,7 @@ routes = ($stateProvider,$urlRouterProvider) !->
   $urlRouterProvider.otherwise \/
   $stateProvider
     ..state \home,
-      * url: \/test3
+      * url: \/
         template: \<home></home>
 angular
   .module 'app'

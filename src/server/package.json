@@ -15,6 +15,7 @@
     "debug": "^2.2.0",
     "ejs": "^2.4.2",
     "express": "^4.13.4",
+    "http-browserify": "^1.7.0",
     "jade": "^1.11.0",
     "mongoose": "^4.4.19",
     "serve-favicon": "^2.3.0"

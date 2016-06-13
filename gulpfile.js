@@ -44,7 +44,10 @@
   shell           = require('gulp-shell'),
   exec            = require('child_process').exec,
   bower           = require('gulp-bower'),
-  runSequence     = require('run-sequence');
+  runSequence     = require('run-sequence'),
+  browserify      = require('browserify'),
+  source          = require('vinyl-source-stream'),
+  derequire       = require('browserify-derequire');
 
   var reload = browserSync.reload;
 
@@ -277,13 +280,37 @@ gulp.task('build', function (callback) {
 =            DIST            =
 ============================*/
 
+gulp.task('copy-yml-diqt', function () {
+  return gulp.src(paths.yml)
+  .pipe(copy('./dist/', {prefix: 1}));
+  });
+
 gulp.task('clean_dist', ['build'], function () {
   return gulp.src('dist/', {read: false})
   .pipe(clean());
   });
+gulp.task('browserify', ['build'], function () {
+  browserify(paths.server, {
+            browserField : false,
+            builtins : false,
+            commondir : false,
+            insertGlobalVars : {
+                process: undefined,
+                global: undefined,
+                'Buffer.isBuffer': undefined,
+                Buffer: undefined
+            }
+        })
+  .bundle()
+  .on('error', function(e){
+    gutil.log(e);
+    })
+  .pipe(source('server-bundle.js'))
+  .pipe(gulp.dest('./dist/server/'));
+  });
 
 gulp.task('usemin', ['clean_dist'], function() {
-  return gulp.src('./build/index.html')
+  return gulp.src('./build/client/index.html')
   .pipe(usemin({
     css: [ minifyCss(), rev() ],
     html: [ minifyHtml({collapseWhitespace: true}) ],
@@ -291,10 +318,10 @@ gulp.task('usemin', ['clean_dist'], function() {
     inlinejs: [ uglify({beautify:true, mangle: true}) ],
     inlinecss: [ minifyCss() ]
     }))
-  .pipe(gulp.dest('./dist/'));
+  .pipe(gulp.dest('./dist/client/'));
   });
 
-gulp.task('dist', ['copy-yml', 'usemin']);
+gulp.task('client-dist', ['copy-yml', 'usemin']);
 
 /*=====  End of DIST  ======*/
 
