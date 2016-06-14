@@ -289,11 +289,13 @@ gulp.task('clean_dist', ['build'], function () {
   return gulp.src('dist/', {read: false})
   .pipe(clean());
   });
-gulp.task('browserify', ['build'], function () {
-  browserify(paths.server, {
+gulp.task('browserify', ['client-dist'], function () {
+  browserify({
             browserField : false,
+            basedir: './build/server/',
+            entries: 'bin/server.js',
             builtins : false,
-            commondir : false,
+            commondir: './dist/server',
             insertGlobalVars : {
                 process: undefined,
                 global: undefined,
@@ -306,7 +308,7 @@ gulp.task('browserify', ['build'], function () {
     gutil.log(e);
     })
   .pipe(source('server-bundle.js'))
-  .pipe(gulp.dest('./dist/server/'));
+  .pipe(gulp.dest('./dist/server'));
   });
 
 gulp.task('usemin', ['clean_dist'], function() {
