@@ -295,15 +295,17 @@ gulp.task('clean_dist', ['build'], function () {
 gulp.task('browserify', function () {
   browserify({
     browserField : false,
-    basedir: './build/server',
-    entries: 'bin/server.js',
+    entries: './build/server/bin/server.js',
+    paths: ['./build/server'],
+    // entries: 'bin/server.js',
     builtins : false,
     commondir: false,
     insertGlobalVars : {
       process: undefined,
       global: undefined,
       'Buffer.isBuffer': undefined,
-      Buffer: undefined
+      Buffer: undefined,
+      __dirname: './dist/server'
     }
   })
   .bundle()
@@ -311,7 +313,7 @@ gulp.task('browserify', function () {
     gutil.log(e);
   })
   .pipe(source('server-bundle.js'))
-  .pipe(gulp.dest(path.join(__dirname, './dist/')));
+  .pipe(gulp.dest(path.join(__dirname, './dist/server')));
 });
 
 gulp.task('usemin', ['clean_dist'], function() {
@@ -345,7 +347,7 @@ gulp.task('open-dist', function () {
   }));
 });
 gulp.task('dist', function (callback) {
-  runSequence('client-dist', 'server-dist', 'nodemon-dist','open-dist',  callback);
+  runSequence('client-dist', 'server-dist', 'nodemon-dist',  callback);
 });
 
 /*=====  End of DIST  ======*/
