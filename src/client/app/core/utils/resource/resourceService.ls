@@ -39,17 +39,16 @@ let
 
           interceptor:
             if interceptor
-              val =
-                response: self.base_interceptor
+              response: self.base_interceptor
             else
-              val = undefined
+              undefined
           params: params
         }
 
       @query = (query, callback) ->
         query.$promise.then (success) ->
           if callback?
-              callback null, success
+            callback null, success
         .catch (error) ->
           if callback?
             callback error

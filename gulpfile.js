@@ -54,7 +54,8 @@
   var reload = browserSync.reload;
 
   var paths = {
-    ls: ['!./src/server/node_modules',  './src/**/*.ls'],
+    ls: ['!**/*Spec.ls', '!./src/server/node_modules',  './src/**/*.ls'],
+    ls_spec: ['!./src/server/node_modules', './src/**/*Spec.ls'],
     jade: ['!./src/client/index.jade', '!./src/server/node_modules', './src/**/*.jade'],
     jade_index: './src/client/index.jade',
     stylus: ['!./src/server/node_modules', './src/**/*.styl'],
@@ -86,6 +87,14 @@ gulp.task('ls.c', function() {
   .pipe(livescript())
   .pipe(sourcemaps.write(paths.maps))
   .pipe(gulp.dest('./build/'));
+});
+
+gulp.task('ls-spec.c', function() {
+  return gulp.src(paths.ls_spec)
+  .pipe(sourcemaps.init())
+  .pipe(livescript())
+  .pipe(sourcemaps.write(paths.maps))
+  .pipe(gulp.dest('./spec/'));
 });
 
 gulp.task('index.c', function () {
@@ -129,7 +138,7 @@ gulp.task('compile-jade-index', ['compile'], function () {
   .pipe(gulp.dest('./build/'));
 })
 
-gulp.task('compile', ['ls.c', 'jade.c', 'stylus.c']);
+gulp.task('compile', ['ls.c', 'ls-spec.c', 'jade.c', 'stylus.c']);
 
 /*=====  End of AUTO  ======*/
 
@@ -248,7 +257,7 @@ gulp.task('install-server-packages', ['copy-server-packages'], function () {
 ================================*/
 
 gulp.task('watch-ls', function (callback) {
-  runSequence('ls.c', 'inject-js','inject-html',callback);
+  runSequence(['ls.c', 'ls-spec.c'], 'inject-js','inject-html',callback);
 });
 
 gulp.task('watch-jade', function (callback) {

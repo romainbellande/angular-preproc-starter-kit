@@ -1,15 +1,13 @@
-let
-  'use strict'
-  new angulatool.directive do
+'use strict'
+new angulatool.component do
 
-    name: \home
+  name: \home
 
-    inject:
-      scope: ['HomeService']
-      self: []
+  inject:
+    scope: ['HomeService']
+    self: []
 
-    template: ''
+  template: ''
 
-    callback: (scope, elements, attrs) ->
-
+  callback: ($scope) ->
 
