@@ -1,42 +1,23 @@
-# let
-#   'user strict'
-#   new angulatool.service do
-#     name: \=entities=Service
-#     inject: <[ $location] ]>
-#     callback: ->
-#       /*============================
-#       =            VARS            =
-#       ============================*/
+'user strict'
+new angulatool.service \ConfigService do
+  \$location
+  callback: ->
 
-#       @env = ''
-#       @config = YAML.load \app/core/config/config.YAML
+    @env = ''
+    @config = YAML.load \app/core/config/config.yml
 
-#       /*=====  End of VARS  ======*/
-#       /*===============================
-#       =            METHODS            =
-#       ===============================*/
+    @setEnv = (env) ~>
+      if env?
+        @env = env
+      else if $location.host() === \127.0.0.1
+        @env = \development
+      else
+        @env = \production
 
-#       @setEnv = (env) ~>
-#         if angular?
-#           @env = env
-#         else if @$location.$$host === \localhost
-#           @env = \development
-#         else
-#           @env = \staging
+    @getEnv = ~> @env
 
-#       @getEnv = ~> @.env
+    @getApiUrl = ~> @config.env[@env].baseUrl + \/api/
 
-#       @getApiUrl = ~> @config.env[@env].baseUrl + \/api
-
-#       @getRoute = (routeName) ~> @getApiUrl() + @config.routes[routeName]
-
-#       /*=====  End of METHODS  ======*/
-#       /*============================
-#       =            INIT            =
-#       ============================*/
-
-#       @setEnv 'development'
-
-#       /*=====  End of INIT  ======*/
+    @getBaseUrl = (routeName) ~> @getApiUrl! + @config.routes[routeName]
 
 

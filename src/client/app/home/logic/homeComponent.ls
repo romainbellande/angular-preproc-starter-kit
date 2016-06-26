@@ -1,7 +1,6 @@
 'use strict'
 
-new angulatool.component do
-  name: \home
+new angulatool.component \home do
   template: ''
   callback: ($scope, $element, $attrs, HomeService) !->
-    console.log HomeService
+    console.log HomeService.blabla

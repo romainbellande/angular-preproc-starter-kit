@@ -156,7 +156,8 @@ gulp.task('inject-html', function () {
     starttag: 'template: \'',
     endtag: '\'',
     transform: function (filePath, file, i, length, targetFile) {
-      if (filePath.indexOf('/') === -1) {
+      console.log(filePath);
+      if (filePath.indexOf('../render') > -1) {
         // console.log(', template: \"' + file.contents.toString('utf-8') + '\"');
         return escape(minifyHtmlInput(file.contents.toString('utf-8'), {collapseWhitespace: true, preventAttributesEscaping: true}));
       }
@@ -425,6 +426,7 @@ dogen.config({
 
 dogen.task('component', __dirname + '/src/client/app/');
 dogen.task('service', __dirname + '/src/client/app/');
+dogen.task('test', __dirname + '/src/client/app/');
 
 /*=====  End of GENERATOR  ======*/
 

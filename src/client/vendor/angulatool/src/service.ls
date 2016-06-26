@@ -16,7 +16,8 @@ let
 
   service = (...args) ->
     @name = args.0
-    @inject = args.1
+    @callback = args.1[\callback]
+    # @inject = pn
     @options = args.2
     # @inject = params.inject
     # @callback = params.callback
@@ -30,13 +31,9 @@ let
       (...args) ~>
         args = args |> filter (.0 isnt \$)
         if @isQService
-          args = args ++ [ params.name \ResourceService ]
+          args = args ++ [ args.0 \ResourceService ]
         else if @isResource
           args = args ++ [\$resource \ResourceService]
-
-        for toInjectInThis, j in params.inject
-          @[toInjectInThis] = args[j]
-        console.log params.callback.test
         callback ...
 
     @init = ~>
@@ -46,7 +43,7 @@ let
       else
         category = \service
 
-      (angular.module \app. + category + \s).service @name , @inject
+      (angular.module \app. + category + \s).service @name , angulatool.getArgs(@callback) ++ [@callback]
 
     @init?!
 

@@ -24,5 +24,7 @@
       "main": "preroll.js"
     }
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "angular-mocks": "^1.5.7"
+  }
 }

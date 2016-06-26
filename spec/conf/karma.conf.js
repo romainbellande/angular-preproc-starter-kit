@@ -18,6 +18,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       '../build/client/lib/angular/angular.js',
+      '../build/client/lib/angular-mocks/angular-mocks.js',
       '../build/client/lib/angular-ui-router/release/angular-ui-router.js',
       '../build/client/vendor/prelude-ls/prelude-ls.min.js',
       '../build/client/vendor/**/*.js',

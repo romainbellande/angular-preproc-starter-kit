@@ -5,8 +5,8 @@ env:
   staging:
     baseUrl: http://IP_STAGING:3000
 
-  prod:
-    baseUrl: http://IP_PROD:3000
+  production:
+    baseUrl: http://IP_PRODUCTION:3000
 
 routes:
   users: users/:user_id

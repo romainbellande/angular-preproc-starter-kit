@@ -13,29 +13,18 @@ require! {
 
 window import prelude-ls
 
-component = (params) ->
-  @name = params.name
-  # @inject = params.inject.scope ++ params.inject.self
-  @callback = params.callback
+component = (...args) ->
 
-  # @base = (template, callback) ->
-  #   injectTab = params.inject.scope ++ capitalize(params.name) + \Service
-  #   * template: template
-  #     bindings: {}
-  #     controller: ($scope) ~>
-  #       for toInjectInScope, i in injectTab
-  #         $scope[toInjectInScope] = injectTab[i]
-  #       for toInjectInSelf, j in params.inject.self
-  #         @[toInjectInSelf] = params.inject.self[j]
-  #       callback ...
+  @name = args.0
+  @callback = args.1[\callback]
+  @template = args.1[\template]
+
   @base = (template, controller) ->
     * template: template
       controller: controller
 
-
-  @init = ->
-    console.log 'init component'
-    (angular.module \app.components).component params.name, @base(params.template, @callback)
+  @init = ~>
+    (angular.module \app.components).component @name, @base(@template, @callback)
   @init?!
 
 angulatool.setComponent component
