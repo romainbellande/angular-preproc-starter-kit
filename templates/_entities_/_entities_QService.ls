@@ -2,4 +2,4 @@
 new angulatool.service \=entities=Service do
   options:
     isQService: true
-  callback: ($resource, ResourceService)->
+  callback: ($resource, ResourceService) ->

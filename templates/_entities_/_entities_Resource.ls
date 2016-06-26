@@ -1,8 +1,6 @@
-let
-  'user strict'
-  new angulatool.service do
-    name: \=entities=Resource
-    inject: <[ $resource ResourceService ConfigService] ]>
+'user strict'
+new angulatool.service \=entities=Resource do
+  options:
     isResource: true
-    callback: ->
-      @$resource ConfigService
+  callback: ($resource, ResourceService, ConfigService) ->
+
