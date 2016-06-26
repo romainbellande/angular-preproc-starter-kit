@@ -3,6 +3,7 @@ angular
   .module \app [
     * \app.controllers
     * \app.directives
+    * \app.components
     * \app.services
     * \app.resources
     * \app.constants

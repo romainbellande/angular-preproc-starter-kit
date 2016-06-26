@@ -1,42 +1,42 @@
-let
-  'user strict'
-  new angulatool.service do
-    name: \=entities=Service
-    inject: <[ $location] ]>
-    callback: ->
-      /*============================
-      =            VARS            =
-      ============================*/
+# let
+#   'user strict'
+#   new angulatool.service do
+#     name: \=entities=Service
+#     inject: <[ $location] ]>
+#     callback: ->
+#       /*============================
+#       =            VARS            =
+#       ============================*/
 
-      @env = ''
-      @config = YAML.load \app/core/config/config.YAML
+#       @env = ''
+#       @config = YAML.load \app/core/config/config.YAML
 
-      /*=====  End of VARS  ======*/
-      /*===============================
-      =            METHODS            =
-      ===============================*/
+#       /*=====  End of VARS  ======*/
+#       /*===============================
+#       =            METHODS            =
+#       ===============================*/
 
-      @setEnv = (env) ~>
-        if angular?
-          @env = env
-        else if @$location.$$host === \localhost
-          @env = \development
-        else
-          @env = \staging
+#       @setEnv = (env) ~>
+#         if angular?
+#           @env = env
+#         else if @$location.$$host === \localhost
+#           @env = \development
+#         else
+#           @env = \staging
 
-      @getEnv = ~> @.env
+#       @getEnv = ~> @.env
 
-      @getApiUrl = ~> @config.env[@env].baseUrl + \/api
+#       @getApiUrl = ~> @config.env[@env].baseUrl + \/api
 
-      @getRoute = (routeName) ~> @getApiUrl() + @config.routes[routeName]
+#       @getRoute = (routeName) ~> @getApiUrl() + @config.routes[routeName]
 
-      /*=====  End of METHODS  ======*/
-      /*============================
-      =            INIT            =
-      ============================*/
+#       /*=====  End of METHODS  ======*/
+#       /*============================
+#       =            INIT            =
+#       ============================*/
 
-      @setEnv 'development'
+#       @setEnv 'development'
 
-      /*=====  End of INIT  ======*/
+#       /*=====  End of INIT  ======*/
 
 

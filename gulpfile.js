@@ -70,7 +70,7 @@
     inject_css: ['assets/**/*.css', 'app/**/*.css'],
     src_vendor_files: ['!./src/client/vendor/**/*.ls', './src/client/vendor/**/*.*'],
     vendor_files: ['!vendor/prelude-ls/*', 'vendor/**/*.js', 'vendor/**/*.css'],
-    directives: ['./build/client/app/**/*Directive.js'],
+    components: ['./build/client/app/**/*Component.js'],
     server_package: 'server/package.json',
     server: './build/server/bin/server.js',
     server_dist: './dist/server/server-bundle.js',
@@ -147,7 +147,7 @@ gulp.task('compile', ['ls.c', 'ls-spec.c', 'jade.c', 'stylus.c']);
 ==================================*/
 
 gulp.task('inject-html', function () {
-  return gulp.src(paths.directives)
+  return gulp.src(paths.components)
   .pipe(inject(
                gulp.src(paths.html, {'cwd': __dirname + '/build/client'}),
                {

@@ -9,5 +9,5 @@ let
       setDirective: (func) ->
         @.directive = func
       setComponent: (func) ->
-        @.component
+        @.component = func
 

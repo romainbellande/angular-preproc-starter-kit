@@ -2,4 +2,6 @@
 node_modules/
 build/*
 dist/*
+spec/client/*
+spec/server/*
 bower_components/

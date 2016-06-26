@@ -17,11 +17,14 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      // "build/",
-      // '../build/client/lib/angular/angular.js',
-      // '../build/client/lib/**/*.js',
-      // '../build/client/vendor/**/*.js',
-      // '../build/client/app/**/*.js',
+      '../build/client/lib/angular/angular.js',
+      '../build/client/lib/angular-ui-router/release/angular-ui-router.js',
+      '../build/client/vendor/prelude-ls/prelude-ls.min.js',
+      '../build/client/vendor/**/*.js',
+      '../build/client/app/core/app.modules.js',
+      '../build/client/app/core/app.setup.js',
+      '../build/client/app/core/app.routes.js',
+      '../build/client/app/core/app.constants.js'
     ],
 
 
@@ -71,5 +74,5 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  };
-};
+  }
+}

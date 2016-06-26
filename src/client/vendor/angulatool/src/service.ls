@@ -14,17 +14,21 @@ let
 
   window import prelude-ls
 
-  service = (params) ->
-    @name = params.name
-    @inject = params.inject
-    @callback = params.callback
-    if params.isQService?
-      @isQService = params.isQService
-    if params.isResource?
-      @isResource = params.isResource
+  service = (...args) ->
+    @name = args.0
+    @inject = args.1
+    @options = args.2
+    # @inject = params.inject
+    # @callback = params.callback
+    if @options?
+      if @options.isQService?
+        @isQService = @options.isQService
+      if @options.isResource?
+        @isResource = @options.isResource
 
     @base = (callback) ->
       (...args) ~>
+        args = args |> filter (.0 isnt \$)
         if @isQService
           args = args ++ [ params.name \ResourceService ]
         else if @isResource
@@ -32,16 +36,17 @@ let
 
         for toInjectInThis, j in params.inject
           @[toInjectInThis] = args[j]
+        console.log params.callback.test
         callback ...
 
-    @init = ->
+    @init = ~>
       category
       if @isResource
         category = \resource
       else
         category = \service
 
-      (angular.module \app. + category + \s)[category] @name , @inject ++ [@base(@callback)]
+      (angular.module \app. + category + \s).service @name , @inject
 
     @init?!
 

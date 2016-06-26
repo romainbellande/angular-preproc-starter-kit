@@ -5,7 +5,7 @@ module.exports = function(config) {
 
   conf.files = conf.files.concat([
     //test files
-    'client/app/**/*UnitSpec.js'
+    'client/**/*Spec.js'
   ]);
 
   config.set(conf);
