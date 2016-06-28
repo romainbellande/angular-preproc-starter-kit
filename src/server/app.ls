@@ -5,7 +5,8 @@ cookieParser = require \cookie-parser
 bodyParser = require \body-parser
 config = require \./config
 cors = require \cors
-ejs = require \ejs
+routing = require \./vendor/angulatool-server/src/routing
+
 # mongoose = require \mongoose
 
 app = express()
@@ -13,7 +14,7 @@ app = express()
 app.set \env \development
 app.use(express.static(path.join(__dirname, \../client)))
 app.use cors()
-
+app.use \test routing.createRoute \test
 # development error handler
 # will print stacktrace
 if app.get \env === \development
