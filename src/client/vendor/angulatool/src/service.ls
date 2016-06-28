@@ -31,7 +31,7 @@ let
       (...args) ~>
         args = args |> filter (.0 isnt \$)
         if @isQService
-          args = args ++ [ args.0 \ResourceService ]
+          args = args ++ [args.0 \ResourceService]
         else if @isResource
           args = args ++ [\$resource \ResourceService]
         callback ...

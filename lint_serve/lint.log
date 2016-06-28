@@ -1,0 +1,38 @@
+    [32m✓[39m ./src/client/app/core/app.constants.ls
+    [32m✓[39m ./src/client/app/core/app.modules.ls
+    [32m✓[39m ./src/client/app/core/app.routes.ls
+    [32m✓[39m ./src/client/app/core/app.setup.ls
+    [33m☞[39m ./src/client/app/core/config/configService.ls
+      [33m☞[39m Last line needs single EOL. (23)
+    [32m✓[39m ./src/client/app/core/utils/resource/resourceService.ls
+    [32m✓[39m ./src/client/app/home/logic/homeComponent.ls
+    [32m✓[39m ./src/client/app/home/logic/homeService.ls
+    [32m✓[39m ./src/client/app/home/spec/homeUnitSpec.ls
+    [33m☞[39m ./src/client/vendor/angulatool/angulatool.ls
+      [33m☞[39m No space is necessary inside parentheses. (14:66)
+      [33m☞[39m Max line length should be 79. (15)
+      [33m☞[39m Last line needs single EOL. (16)
+    [32m✓[39m ./src/client/vendor/angulatool/src/base.ls
+    [33m☞[39m ./src/client/vendor/angulatool/src/component.ls
+      [33m☞[39m Max line length should be 79. (27)
+    [33m☞[39m ./src/client/vendor/angulatool/src/directive.ls
+      [33m☞[39m Should not rewrite variables. (25)
+      [33m☞[39m Max line length should be 79. (27)
+      [33m☞[39m Max line length should be 79. (37)
+    [33m☞[39m ./src/client/vendor/angulatool/src/resource.ls
+      [33m☞[39m Max line length should be 79. (31)
+      [33m☞[39m Last line needs single EOL. (38)
+    [33m☞[39m ./src/client/vendor/angulatool/src/service.ls
+      [33m☞[39m Should not rewrite variables. (32)
+      [33m☞[39m Max line length should be 79. (46)
+      [33m☞[39m Last line needs single EOL. (53)
+    [32m✓[39m ./src/server/app.ls
+    [33m☞[39m ./src/server/bin/server.ls
+      [33m☞[39m Last line needs single EOL. (55)
+    [32m✓[39m ./src/server/config.ls
+    [33m☞[39m ./src/server/utils/jadeHandler.ls
+      [33m☞[39m Max line length should be 79. (4)
+      [33m☞[39m Should not rewrite variables. (4)
+    [32m✓[39m ./ls-lint.lson
+
+  [33m☞[39m 0 fatals, 0 errors, 16 warnings in 20 files.

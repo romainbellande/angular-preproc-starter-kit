@@ -5,3 +5,4 @@ dist/*
 spec/client/*
 spec/server/*
 bower_components/
+lint_serve/lint.html
