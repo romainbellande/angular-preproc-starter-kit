@@ -1,0 +1,112 @@
+{
+  "_args": [
+    [
+      "ls-lint",
+      "/Users/berelindis/Dev/bundle/ls_stylus_jade_starter"
+    ]
+  ],
+  "_from": "ls-lint@latest",
+  "_id": "ls-lint@0.1.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/ls-lint",
+  "_nodeVersion": "6.1.0",
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/ls-lint-0.1.0.tgz_1462772670883_0.2786759554874152"
+  },
+  "_npmUser": {
+    "email": "eheitherd.ceres@gmail.com",
+    "name": "eheitherd"
+  },
+  "_npmVersion": "3.8.6",
+  "_phantomChildren": {
+    "graceful-readlink": "1.0.1"
+  },
+  "_requested": {
+    "name": "ls-lint",
+    "raw": "ls-lint",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/ls-lint/-/ls-lint-0.1.0.tgz",
+  "_shasum": "6c7a4c7636c1970e5496e736bc66c567486cadf0",
+  "_shrinkwrap": null,
+  "_spec": "ls-lint",
+  "_where": "/Users/berelindis/Dev/bundle/ls_stylus_jade_starter",
+  "author": {
+    "name": "Eheitherd Ceres"
+  },
+  "bin": {
+    "ls-lint": "./bin/ls-lint"
+  },
+  "bugs": {
+    "url": "https://github.com/eheitherd/ls-lint/issues"
+  },
+  "dependencies": {
+    "commander": "^2.9.0",
+    "glob-all": "^3.0.3",
+    "livescript": "^1.4.0",
+    "prelude-ls": "^1.1.2"
+  },
+  "description": "Lint your LiveScript code",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-livescript": "^3.0.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-newer": "^1.1.0",
+    "gulp-util": "^3.0.7",
+    "vinyl-paths": "^2.1.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "6c7a4c7636c1970e5496e736bc66c567486cadf0",
+    "tarball": "https://registry.npmjs.org/ls-lint/-/ls-lint-0.1.0.tgz"
+  },
+  "engines": {
+    "node": ">= 0.11.13"
+  },
+  "files": [
+    "README.md",
+    "bin",
+    "lib",
+    "ls-lint.lson",
+    "package.json"
+  ],
+  "gitHead": "13354bd59c05ebe91365b405e14a2886e48ddbb9",
+  "homepage": "https://github.com/eheitherd/ls-lint#readme",
+  "keywords": [
+    "lint",
+    "livescript"
+  ],
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "maintainers": [
+    {
+      "name": "eheitherd",
+      "email": "eheitherd.ceres@gmail.com"
+    }
+  ],
+  "name": "ls-lint",
+  "optionalDependencies": {},
+  "private": false,
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eheitherd/ls-lint.git"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "clean": "gulp clean",
+    "lint": "node ./bin/ls-lint ./**/*.ls?(on)",
+    "test": "gulp test"
+  },
+  "version": "0.1.0"
+}

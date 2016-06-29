@@ -49,7 +49,8 @@
   source          = require('vinyl-source-stream'),
   derequire       = require('browserify-derequire'),
   open            = require('gulp-open'),
-  path            = require('path');
+  path            = require('path'),
+  lsLint          = require('ls-lint');
 
   var reload = browserSync.reload;
 
@@ -156,7 +157,6 @@ gulp.task('inject-html', function () {
     starttag: 'template: \'',
     endtag: '\'',
     transform: function (filePath, file, i, length, targetFile) {
-      console.log(filePath);
       if (filePath.indexOf('../render') > -1) {
         // console.log(', template: \"' + file.contents.toString('utf-8') + '\"');
         return escape(minifyHtmlInput(file.contents.toString('utf-8'), {collapseWhitespace: true, preventAttributesEscaping: true}));
@@ -258,7 +258,7 @@ gulp.task('install-server-packages', ['copy-server-packages'], function () {
 ================================*/
 
 gulp.task('watch-ls', function (callback) {
-  runSequence(['ls.c', 'ls-spec.c'], 'inject-js','inject-html',callback);
+  runSequence(['ls.c', 'ls-spec.c', 'write-lint'], 'inject-js','inject-html',callback);
 });
 
 gulp.task('watch-jade', function (callback) {
@@ -398,22 +398,25 @@ gulp.task('serve', ['nodemon'], function() {
 
 
 /*=====  End of GLOBAL  ======*/
+gulp.task('write-lint', function (){
+  return exec("./node_modules/ls-lint/bin/ls-lint './src/**/**/**/**/*.ls' ./ls-lint.lson > lint_serve/lint.log");
+});
 
-// gulp.task('serve-dist', ['dist'], function () {
-//   gulp.src('./dist/')
-//   .pipe(server({
-//     livereload: {
-//       enable: true,
-//       port: 35730,
-//       filter: function (filename, cb) {
-//         cb(!/\.ls$|\.jade$|node_modules/.test(filename));
-//       }
-//       },
-//       directoryListing: false,
-//       open: true,
-//       port: 8001
-//       }));
-//   });
+gulp.task('serve-lint', ['write-lint'], function () {
+  gulp.src('./lint_serve')
+  .pipe(server({
+    livereload: {
+      enable: true,
+      port: 35730
+      // filter: function (filename, cb) {
+      //   cb(!/\.ls$|\.jade$|node_modules/.test(filename));
+      // }
+      },
+      directoryListing: false,
+      open: true,
+      port: 8001
+    }));
+  });
 
 /*=================================
 =            GENERATOR            =

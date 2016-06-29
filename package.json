@@ -5,7 +5,7 @@
   "main": "bundle.js",
   "scripts": {
     "test": "karma start spec/conf/karma/karma-unit.conf.js",
-    "lint": "node_modules/ls-lint/bin/ls-lint src/**/**/**/**/**/**/**/*.ls ls-lint.lson",
+    "lint": "./ls-lint/bin/ls-lint 'src/**/*.ls' ls-lint.lson",
     "validate": "npm ls"
   },
   "author": "Romain Bellande",

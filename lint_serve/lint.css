@@ -1,0 +1,60 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: #443f3f;
+  margin: 0px;
+  padding: 0px;
+}
+.title {
+  text-align: center;
+  margin-top: 0;
+  color: white;
+  padding-top: 10px;
+  /*padding-bottom: 5px;*/
+}
+#lint-data {
+  width: 500px;
+  margin: 0 auto;
+  border: 1px solid black;
+  box-shadow: 1px 1px 50px 10px;
+}
+#lint-data .col {
+/*  display: inline-block;
+  vertical-align: top;
+  width: 30%;*/
+}
+.item {
+  padding: 5px 10px;
+}
+.sub-info {
+  padding-left: 30px;
+}
+.warning {
+  color: #9F6000;
+  background-color: #FEEFB3;
+}
+.warning.sub-info {
+  color: #9F6000;
+  background-color: #fff4ca;
+}
+.success {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+}
+.error {
+  background-color: #FFBABA;
+  color: #ad3737;
+}
+.fatal {
+  background-color: #88605f;
+  color: #3c0f0f;
+}
+.info {
+  color: #00529B;
+  background-color: #BDE5F8;
+}
+#total {
+  position: fixed;
+  right: 0;
+  text-align: right;
+}
