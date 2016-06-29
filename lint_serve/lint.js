@@ -65,7 +65,11 @@ load('./lint.log', function (res) {
         line.appendChild(totalFiles);
         addClass(line, 'total');
       } else {
-        if (contains(data[i], '☞')) {
+        if (contains(data[i], '☠')) {
+          addClass(line,'fatal');
+        } else if (contains(data[i], '✗')) {
+          addClass(line, 'error');
+        } else if (contains(data[i], '☞')) {
           addClass(line, 'warning');
         }
         if (contains(data[i], '(')) {

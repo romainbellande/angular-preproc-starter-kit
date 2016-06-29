@@ -4,7 +4,7 @@
   module.exports = function(error){
     return printerrln(
     function(it){
-      return "\n  " + levelMark('fatal') + " " + it;
+      return '\n  ' + levelMark('fatal') + ' ' + it;
     }(
     function(it){
       return it.toString();

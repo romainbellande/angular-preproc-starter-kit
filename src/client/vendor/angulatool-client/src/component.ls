@@ -24,7 +24,8 @@ component = (...args) ->
       controller: controller
 
   @init = ~>
-    (angular.module \app.components).component @name, @base(@template, @callback)
+    (angular.module \app.components)
+      .component @name, @base(@template, @callback)
   @init?!
 
 angulatool.setComponent component
