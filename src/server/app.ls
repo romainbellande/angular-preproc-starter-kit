@@ -14,7 +14,6 @@ app = express()
 app.set \env \development
 app.use(express.static(path.join(__dirname, \../client)))
 app.use cors()
-app.use \test routing.createRoute \test
 # development error handler
 # will print stacktrace
 if app.get \env === \development
@@ -29,6 +28,7 @@ if app.get \env === \development
 
 
 app.use angulatool.router.create \bla
+app.use angulatool.router.create \test
 # production error handler
 # no stacktraces leaked to user
 app.use(

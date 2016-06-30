@@ -1,34 +1,38 @@
     [32m✓[39m ./src/client/app/core/app.constants.ls
     [32m✓[39m ./src/client/app/core/app.modules.ls
+    [32m✓[39m ./src/client/app/core/app.routes.ls
     [32m✓[39m ./src/client/app/core/app.setup.ls
     [32m✓[39m ./src/client/app/core/config/configService.ls
-    [32m✓[39m ./src/client/app/core/app.routes.ls
     [32m✓[39m ./src/client/app/core/utils/resource/resourceService.ls
     [32m✓[39m ./src/client/app/home/logic/homeComponent.ls
     [32m✓[39m ./src/client/app/home/logic/homeService.ls
-    [32m✓[39m ./src/client/app/home/spec/homeUnitSpec.ls
     [33m☞[39m ./src/client/vendor/angulatool-client/angulatool-client.ls
       [33m☞[39m No space is necessary inside parentheses. (13:64)
+    [32m✓[39m ./src/client/app/home/spec/homeUnitSpec.ls
     [32m✓[39m ./src/client/vendor/angulatool-client/src/base.ls
     [32m✓[39m ./src/client/vendor/angulatool-client/src/component.ls
-    [32m✓[39m ./src/client/vendor/angulatool-client/src/resource.ls
     [33m☞[39m ./src/client/vendor/angulatool-client/src/directive.ls
       [33m☞[39m Should not rewrite variables. (25)
+    [33m☞[39m ./src/client/vendor/angulatool-client/src/resource.ls
+      [33m☞[39m Max line length should be 79. (31)
+      [33m☞[39m Last line needs single EOL. (38)
     [33m☞[39m ./src/client/vendor/angulatool-client/src/service.ls
-      [33m☞[39m Should not rewrite variables. (30)
+      [33m☞[39m Should not rewrite variables. (32)
+      [33m☞[39m Max line length should be 79. (46)
+      [33m☞[39m Last line needs single EOL. (53)
     [32m✓[39m ./src/server/app.ls
+    [32m✓[39m ./src/server/config.ls
     [32m✓[39m ./src/server/bin/server.ls
     [33m☞[39m ./src/server/utils/jadeHandler.ls
       [33m☞[39m Should not rewrite variables. (4)
-    [32m✓[39m ./src/server/config.ls
-    [32m✓[39m ./src/server/vendors/angulatool-server/angulatool-server.ls
-    [33m☞[39m ./src/server/vendors/angulatool-server/src/database/controller.ls
-      [33m☞[39m Last line needs single EOL. (16)
-    [33m☞[39m ./src/server/vendors/angulatool-server/src/database/model.ls
+    [32m✓[39m ./src/server/vendor/angulatool-server/angulatool-server.ls
+    [33m☞[39m ./src/server/vendor/angulatool-server/src/database/controller.ls
+      [33m☞[39m Last line needs single EOL. (14)
+    [32m✓[39m ./src/server/vendor/angulatool-server/src/router/router.ls
+    [33m☞[39m ./src/server/vendor/angulatool-server/src/database/model.ls
       [33m☞[39m Variable 'Schema' should be camelCase. (3:1)
-    [32m✓[39m ./src/server/vendors/angulatool-server/src/router/router.ls
-    [33m☞[39m ./src/server/vendors/angulatool-server/src/router/routeTable.ls
+    [33m☞[39m ./src/server/vendor/angulatool-server/src/router/routeTable.ls
       [33m☞[39m Should not rewrite variables. (10)
     [32m✓[39m ./ls-lint.lson
 
-  [33m☞[39m 0 fatals, 0 errors, 7 warnings in 25 files.
+  [33m☞[39m 0 fatals, 0 errors, 11 warnings in 25 files.
