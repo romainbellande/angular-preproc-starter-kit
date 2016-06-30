@@ -3,24 +3,16 @@ require! \express
 require! \fs
 routeTable = require \./routeTable
 router = express.Router!
-Model = (require \../database/model).Model
-Controller = (require \../database/controller).Controller
 export class Route
-  @route = null
-  (routeName, data) ->
-    entity = new Model routeName, data
-    controller = new Controller entity
+  (routeName, controller) ~>
     router.route "/#{routeName}"
       .get controller.get
-      .post (req, res, next) ->
-        res.send "[POST] #{routeName}"
+      .post controller.post
     router.route "/#{routeName}/:#{routeName}_id"
-      .get (req, res, next) ->
-        res.send "[GET] #{routeName}/:#{routeName}_id"
-      .put (req, res, next) ->
-        res.send "[PUT] #{routeName}/:#{routeName}_id"
-      .delete (req, res, next) ->
-        res.send "[DELETE] #{routeName}/:#{routeName}_id"
+      .get controller.getById
+      .put controller.put
+      .delete controller.delete
 
     routeTable "/#{routeName}", router.stack
     @route = router
+  getRoute: ~> @route

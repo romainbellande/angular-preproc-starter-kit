@@ -196,7 +196,7 @@ naming-conventions:
     class: \PascalCase
     property: \ignore
     function: \camelCase
-    variable: \camelCase
+    variable: \ignore
     constant: \camelCase
 
 # Use 'void' instead of 'undefined'
