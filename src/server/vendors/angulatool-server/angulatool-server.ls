@@ -1,3 +1,3 @@
 'use strict'
-exports.router = require \./src/routing
-exports.routeTable = require \./src/routeTable
+exports.router = require \./src/router/router
+exports.routeTable = require \./src/router/routeTable

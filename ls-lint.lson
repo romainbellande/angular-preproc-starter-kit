@@ -191,7 +191,7 @@ use-english-idetifier: \warning
 # [note] ignore when propety is quoted
 # [note] 'function' supports named function only
 naming-conventions:
-  level: \error
+  level: \warning
   value:
     class: \PascalCase
     property: \ignore

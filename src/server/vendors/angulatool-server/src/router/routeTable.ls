@@ -1,6 +1,6 @@
 module.exports = (baseUrl, routes) ->
-  Table = require 'cli-table'
-  table = new Table {head: ['', 'Path']}
+  cliTable = require 'cli-table'
+  table = new cliTable {head: ['', 'Path']}
   console.log '\nAPI for ' + baseUrl
   console.log '\n********************************************'
   for key of routes
@@ -8,8 +8,6 @@ module.exports = (baseUrl, routes) ->
       val = routes[key]
       if val.route
         val = val.route
-        _n = {}
-        _o = {}
         for key2 of val.stack
           tmp = {}
           tmp[val.stack[key2].method] = val.path
