@@ -1,5 +1,5 @@
 'use strict'
-class Controller
+export class Controller
   (@schema) ->
 
   get: (req, res, next) ->

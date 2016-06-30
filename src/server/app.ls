@@ -26,9 +26,9 @@ if app.get \env === \development
       }
   )
 
-
-app.use angulatool.router.create \bla
-app.use angulatool.router.create \test
+app.use angulatool.Router.create \user do
+  name: String
+  password: String
 # production error handler
 # no stacktraces leaked to user
 app.use(
