@@ -8,9 +8,8 @@ normalizePort = (val) ->
     return port
 
   return false
-
 /**
- * Event listener for HTTP server "error" event.
+ * Event listener for HTTP server "error" event
  */
 
 onError = (error) ->

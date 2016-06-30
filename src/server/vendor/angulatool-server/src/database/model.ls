@@ -1,7 +1,11 @@
 'use strict'
 require! \mongoose
 Schema = mongoose.Schema
-create = (schemaName, data) ->
-  myShema = new Schema data
-  mongoose.model schemaName, myShema
-export create
+export class Model
+  (schemaName, data) ->
+    @schemaName = schemaName
+    @data = data
+    mySchema = new Schema @data
+    @schema = mongoose.model @schemaName, mySchema
+  getSchema: ~> @schema
+  getName: ~> @schemaName

@@ -7,36 +7,15 @@ config = require \./config
 cors = require \cors
 angulatool = require \./vendor/angulatool-server/angulatool-server
 
-# mongoose = require \mongoose
-
 app = express()
 
 app.set \env \development
 app.use(express.static(path.join(__dirname, \../client)))
 app.use cors()
-# development error handler
-# will print stacktrace
-if app.get \env === \development
-  app.use(
-    (err, req, res, next) ->
-      res.status err.status || 500
-      res.render \error, {
-        message: err.message,
-        error: err
-      }
-  )
 
+user = new angulatool.Entity \user do
+  name: String
+  password: String
+app.use user.getRoute!
 
-app.use angulatool.router.create \bla
-app.use angulatool.router.create \test
-# production error handler
-# no stacktraces leaked to user
-app.use(
-  (err, req, res, next) ->
-    res.status err.status || 500
-    res.render \error', {
-      message: err.message
-      error: {}
-    }
-)
 module.exports = app
