@@ -23,10 +23,12 @@ let
     @base = (template, link) ->
       (...args) ~>
         args = args |> filter (.0 isnt \$)
+        scopeTab = params.inject.scope ++ capitalize(params.name) + "Service"
+        injectTab = params.inject.self
         link: (scope) ~>
-          for toInjectInScope, i in params.inject.scope ++ capitalize(params.name) + "Service"
+          for toInjectInScope, i in scopeTab
             scope[toInjectInScope] = args[i]
-          for toInjectInSelf, j in params.inject.self
+          for toInjectInSelf, j in injectTab
             @[toInjectInSelf] = args[j]
           link ...
         restrict: \E
@@ -34,7 +36,9 @@ let
 
     @init = ->
       console.log 'init directive'
-      (angular.module \app.directives).directive params.name, @inject ++ [@base(params.template, @callback)]
+      (angular.module \app.directives).directive do
+        params.name
+        @inject ++ [@base(params.template, @callback)]
 
     @init?!
 

@@ -5,7 +5,7 @@ cookieParser = require \cookie-parser
 bodyParser = require \body-parser
 config = require \./config
 cors = require \cors
-routing = require \./vendor/angulatool-server/src/routing
+angulatool = require \./vendor/angulatool-server/angulatool-server
 
 # mongoose = require \mongoose
 
@@ -28,7 +28,7 @@ if app.get \env === \development
   )
 
 
-
+app.use angulatool.router.create \bla
 # production error handler
 # no stacktraces leaked to user
 app.use(

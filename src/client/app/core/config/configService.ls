@@ -19,5 +19,3 @@ new angulatool.service \ConfigService do
     @getApiUrl = ~> @config.env[@env].baseUrl + \/api/
 
     @getBaseUrl = (routeName) ~> @getApiUrl! + @config.routes[routeName]
-
-
