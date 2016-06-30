@@ -25,10 +25,11 @@ if app.get \env === \development
         error: err
       }
   )
-
-app.use angulatool.Router.create \user do
+user = new angulatool.Route \user do
   name: String
   password: String
+
+app.use user.route
 # production error handler
 # no stacktraces leaked to user
 app.use(

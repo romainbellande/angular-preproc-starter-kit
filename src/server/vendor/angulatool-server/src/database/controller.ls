@@ -3,9 +3,10 @@ export class Controller
   (@schema) ->
 
   get: (req, res, next) ->
-    @schema.find (err, data) ->
-      next err if err?
-      res.json data
+    # @schema.find (err, data) ->
+    #   next err if err?
+    #   res.json data
+    res.send \test
   post: (req, res, next) ->
     data = new @schema req.body
     data.save (err) ->

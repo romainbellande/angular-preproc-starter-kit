@@ -2,6 +2,6 @@
 require! \mongoose
 Schema = mongoose.Schema
 export class Model
-  create: (schemaName, data) ->
+  (schemaName, data) ->
     myShema = new Schema data
     mongoose.model schemaName, myShema

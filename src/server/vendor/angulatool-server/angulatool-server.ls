@@ -1,3 +1,3 @@
 'use strict'
-exports.Router = new (require \./src/router/router).Router
+exports.Route = (require \./src/router/route).Route
 exports.routeTable = require \./src/router/routeTable
