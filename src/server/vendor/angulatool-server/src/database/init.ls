@@ -1,6 +1,6 @@
 'use strict'
-!require \mongoose
-export class db
+require! \mongoose
+export class Db
   (name) ->
     mongoose.connect do
       "mongodb://localhost/#{name}"
