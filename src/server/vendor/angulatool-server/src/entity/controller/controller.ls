@@ -27,7 +27,13 @@ export class Controller
         res.json user
 
   put: (req, res, next) ~>
-    res.send "[PUT] #{@model.getName!}"
+    @schema.findOneAndUpdate do
+      _id: req.params["#{@model.getName!}_id"]
+      {$set: req.body}
+      {new: true}
+      (err, entity) !->
+        next err if err?
+        res.send entity
 
   delete: (req, res, next) ~>
     @schema.remove do

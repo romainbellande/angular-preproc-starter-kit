@@ -4,7 +4,7 @@ require! \fs
 routeTable = require \../../router/routeTable
 router = express.Router!
 export class Route
-  (routeName, controller, behaviors) ~>
+  (routeName, controller, behaviors, dep) ~>
     route = []
     route[\all] = router.route "/#{routeName}"
       .get controller.get

@@ -2,7 +2,7 @@ A = require \../../vendor/angulatool-server/angulatool-server
 InfoBehavior = require \../behaviors/infoBehavior
 module.exports = new A.Entity \user do
   dep:
-    has_one: \dogs
+    has_one: \dog
   attrs:
     name: String
     password: String
