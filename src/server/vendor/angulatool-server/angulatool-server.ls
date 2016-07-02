@@ -1,4 +1,5 @@
 'use strict'
+exports.init = require \./src/init
 logger = require \./src/utils/logger/logger
 logger.welcome!
 exports.Entity = (require \./src/entity/entity).Entity

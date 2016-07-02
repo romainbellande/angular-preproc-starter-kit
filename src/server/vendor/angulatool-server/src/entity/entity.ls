@@ -7,21 +7,21 @@ logger = require \../utils/logger/logger
 
 export class Entity
 
-  (name, data, options) ->
+  (name, data) ->
     @name = name
-    _model = new Model @name, data
+    _model = new Model @name, data.attrs
     _controller = new Controller _model
 
     /* Behaviors  handler*/
-    if options?behaviors?
+    if data.behaviors?
       _behaviors = []
-      _behaviorsMsg = []
-      logger.info "###[#{@name} behaviors]###".toUpperCase!
-      for behavior in options.behaviors
+      _behaviorsMsg = {}
+      logger.info "[#{@name} behaviors]".toUpperCase!
+      for let behavior, i in data.behaviors
         _behaviorClass = void
         if behavior.2?
           _behaviorClass = new behavior.2 _model, behavior
-          _behaviorsMsg.push "behavior \"#{_behaviorClass.getName!}\" registered.."
+          _behaviorsMsg["behavior_#{i}"] = "\"#{_behaviorClass.getName!}\" registered.."
         else
           _behaviorClass = new Behavior _model, behavior
         _behaviors.push _behaviorClass
