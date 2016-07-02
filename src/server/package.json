@@ -15,6 +15,7 @@
     "express": "^4.13.4",
     "jade": "^1.11.0",
     "mongoose": "^4.5.2",
+    "nicelogger": "^0.35.7-a",
     "serve-favicon": "^2.3.0"
   }
 }

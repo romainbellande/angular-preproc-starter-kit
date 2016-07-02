@@ -63,7 +63,8 @@
     js: ['./build/client/app/**/*.js'],
     html: ['app/**/*.html'],
     css: ['client/assets/**/*.css', 'client/app/**/*.css'],
-    yml: ['!./src/server/node_modules','src/client/app/**/*.yml'],
+    yml: ['!./src/server/node_modules','src/client/**/*.yml', 'src/server/**/*.yml'],
+    json: ['!./src/server/node_modules','src/client/**/*.json' ,'src/server/**/*.json'],
     maps: '.',
     bower_dir: './build/client/lib/',
     bower_files: './build/client/lib/**/*.*',
@@ -238,6 +239,11 @@ gulp.task('copy-yml', function () {
   .pipe(copy('./build/', {prefix: 1}));
   });
 
+gulp.task('copy-json', function () {
+  return gulp.src(paths.json)
+  .pipe(copy('./build/', {prefix: 1}));
+  });
+
 gulp.task('copy-vendors', function () {
   return gulp.src(paths.src_vendor_files)
   .pipe(copy('./build/', {prefix: 1}));
@@ -282,7 +288,7 @@ gulp.task('build', function (callback) {
   runSequence(
     'index.c',
     'compile',
-    ['injection', 'copy-yml', 'install-server-packages'],
+    ['injection', 'copy-yml', 'copy-json', 'install-server-packages'],
     callback
     );
   });
@@ -372,7 +378,7 @@ gulp.task('data-folder', function () {
 
 gulp.task('mongodb', ['data-folder'], function () {
   exec ('mongod --dbpath ' + __dirname + '/build/server/db');
-});
+  });
 
 gulp.task('nodemon', ['watch', 'mongodb'], function (cb) {
   var started = false;

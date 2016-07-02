@@ -18,9 +18,24 @@ app.use express.static path.join __dirname, \../client
 
 new A.Db \angulatool
 
-user = new A.Entity \user do
-  name: String
-  password: String
+class InfoBehavior extends A.Behavior
+  ->
+    super ...
+  name: (req, res, next) ~>
+    @getParams req, res, next, \name
+
+user = new A.Entity do
+  \user
+  * name: String
+    password: String
+  * behaviors:
+      * \info
+        (req, res, next) ->
+          res.send "#{@getName!} is a god"
+      * \name
+        -> @name ...
+        InfoBehavior
+
 app.use user.getRoute!
 
 module.exports = app

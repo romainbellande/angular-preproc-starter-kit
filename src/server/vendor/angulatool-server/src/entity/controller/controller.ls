@@ -3,6 +3,7 @@ export class Controller
   (model) ->
     @model = model
     @schema = @model.getSchema!
+
   get: (req, res, next) ~>
     @schema.find (err, data) ->
       next err if err?
