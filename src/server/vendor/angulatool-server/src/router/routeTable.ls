@@ -6,7 +6,7 @@ module.exports = (baseUrl, routes) ->
   for key of routes
     if routes.hasOwnProperty key
       val = routes[key]
-      if val.route
+      if val.route && (val.route.path.indexOf baseUrl) == 0
         val = val.route
         for key2 of val.stack
           tmp = {}

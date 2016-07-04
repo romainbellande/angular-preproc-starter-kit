@@ -10,8 +10,6 @@ export class Model
     if dep?
       if dep.has_one?
         @data[dep.has_one] = {type: mongoose.Schema.Types.ObjectId, ref: dep.has_one}
-    #     console.log \data, @data
-    console.log @data
     mySchema = new Schema @data
     @schema = mongoose.model @schemaName, mySchema
   getSchema: ~> @schema

@@ -5,6 +5,9 @@ Route = (require \./route/route).Route
 Behavior = (require \./controller/behavior).Behavior
 logger = require \../utils/logger/logger
 
+export get = (name) ->
+  require "../../../../entities/#{name}/#{name}"
+
 export class Entity
 
   (name, data) ->
@@ -20,6 +23,10 @@ export class Entity
     @route = _route.getRoute!
 
   getRoute: ~> @route
+  depHandler : (dep) ~>
+    if dep.has_one?
+      console.log \dep:, dep.has_one
+
 
   behaviorHandler: (dataBehaviors) ~>
     _behaviors = []

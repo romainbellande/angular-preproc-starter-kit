@@ -1,5 +1,5 @@
 A = require \../../vendor/angulatool-server/angulatool-server
-InfoBehavior = require \../behaviors/infoBehavior
+InfoBehavior = require \../../behaviors/infoBehavior
 module.exports = new A.Entity \user do
   dep:
     has_one: \dog

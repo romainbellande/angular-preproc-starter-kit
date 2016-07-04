@@ -1,3 +1,4 @@
+logger = require \../utils/logger/logger
 'use strict'
 require! \mongoose
 export class Db
@@ -6,7 +7,7 @@ export class Db
       "mongodb://localhost/#{name}"
       (err) ->
         if err?
-          console.log "db #{name}: connection error", err
+          logger.error "db #{name}: connection error. #{err}"
         else
-          console.log "db #{name}: connection successfull"
+          logger.info "db #{name}: connection successfull"
 

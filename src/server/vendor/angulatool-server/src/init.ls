@@ -1,6 +1,7 @@
+'use strict'
 require! \express
 require! \path
-favicon = require \serve-favicon
+# favicon = require \serve-favicon
 cookieParser = require \cookie-parser
 bodyParser = require \body-parser
 require! \cors
