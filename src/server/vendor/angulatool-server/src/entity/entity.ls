@@ -13,14 +13,16 @@ export class Entity
   (name, data) ->
     @name = name
     @model = new Model @name, data.attrs, data.dep
-    @controller = new Controller @model
+    isRoot = !data.dep?root? or data.dep.root
+    if isRoot
+      @controller = new Controller @model
     _behaviors = void
     /* Behaviors  handler*/
     if data.behaviors?
       _behaviors = @behaviorHandler data.behaviors
 
-    _route = new Route @name, @controller, _behaviors, data.dep
-    @route = _route.getRoute!
+    @routeClass = new Route @name, @controller, _behaviors, data.dep
+    @route = @routeClass.getRoute!
 
   getRoute: ~> @route
   depHandler : (dep) ~>

@@ -4,4 +4,3 @@ module.exports = new A.Entity \dog do
   attrs:
     name: String
     race: String
-    password: String
