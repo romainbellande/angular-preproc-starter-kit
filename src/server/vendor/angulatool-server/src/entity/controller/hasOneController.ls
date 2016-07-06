@@ -37,6 +37,7 @@ export class HasOneController extends Controller
 
   delete: (req, res, next) ->
     if @options.child? and @options.child
+      console.log "has a child"
       @parentModel.schema.findOneAndUpdate do
         req.params["#{@parentModel.getName!}_id"]
         {$unset: @selector}
@@ -50,6 +51,7 @@ export class HasOneController extends Controller
               return next err if err?
               res.sendStatus 200
     else
+      console.log "hasn't a child"
       @parentModel.schema.findById do
         req.params["#{@parentModel.getName!}_id"]
         @selector

@@ -3,8 +3,9 @@ InfoBehavior = require \../../behaviors/infoBehavior
 module.exports = new A.Entity \user do
   dep:
     has_one:
-      \dog
-      child: true
+      * \dog
+        child: true
+      ...
   attrs:
     name: String
     password: String
