@@ -9,7 +9,8 @@ export class Model
     @data = data
     if dep?
       if dep.has_one?
-        @data[dep.has_one.0] = {type: mongoose.Schema.Types.ObjectId, ref: dep.has_one.0}
+        for hasOneDep in dep.has_one
+          @data[hasOneDep.0] = {type: mongoose.Schema.Types.ObjectId, ref: hasOneDep.0}
     mySchema = new Schema @data
     @schema = mongoose.model @schemaName, mySchema
   getSchema: ~> @schema

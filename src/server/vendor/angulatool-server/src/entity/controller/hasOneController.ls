@@ -23,17 +23,20 @@ export class HasOneController extends Controller
     data = new @schema
     for key, value  of req.body
       data[key] = value
-    data.save (err, entity) ~>
+    data.save (err, child) ~>
+      console.log \child, child
       next err if err?
       putItem = {}
-      putItem[@model.schemaName] = entity._id
+      putItem[@model.schemaName] = child._id
+      console.log \putItem, putItem
+      console.log \user_id, req.params["#{@parentModel.getName!}_id"]
       @parentModel.schema.findOneAndUpdate do
         _id: req.params["#{@parentModel.getName!}_id"]
         {$set: putItem}
         {new: true}
-        (err, entity) !->
+        (err, parent) ->
           return next err if err?
-          res.send entity
+          res.send parent
 
   delete: (req, res, next) ->
     if @options.child? and @options.child
