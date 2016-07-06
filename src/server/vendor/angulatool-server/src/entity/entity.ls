@@ -27,7 +27,7 @@ export class Entity
   getRoute: ~> @route
   depHandler : (dep) ~>
     if dep.has_one?
-      console.log \dep:, dep.has_one
+      console.log \dep:, dep.has_one.0
 
 
   behaviorHandler: (dataBehaviors) ~>

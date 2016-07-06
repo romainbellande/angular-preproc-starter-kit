@@ -3,11 +3,12 @@
 require! \express
 entity = require \../entity
 app = (require \../../init)(\angulatool)
+HasOneController = (require \../controller/hasOneController).HasOneController
 Controller = (require \../controller/controller).Controller
 routeTable = require \../../router/routeTable
 router = express.Router!
 export class Route
-  (routeName, controller, behaviors, dep) ~>
+  (routeName, controller, behaviors, dep) ->
     @route = router
     @routeName = routeName
     @paths = {
@@ -20,13 +21,13 @@ export class Route
     isRoot = !dep?root? or dep.root
     if isRoot
       routeList[\all] = @route.route @paths.all
-        .get @controller.get
-        .post @controller.post
+        .get @controller~get
+        .post @controller~post
 
       routeList[\uniq] = @route.route @paths.uniq
-        .get @controller.getById
-        .put @controller.put
-        .delete @controller.delete
+        .get @controller~getById
+        .put @controller~put
+        .delete @controller~delete
 
     @depHandler dep
 
@@ -42,19 +43,18 @@ export class Route
     app.use @route
     routeTable "/#{routeName}", @route.stack if isRoot
     @route = router
-  getRoute: ~> @route
-  depHandler: (dep) ~>
+  getRoute: -> @route
+  depHandler: (dep) ->
     if dep?
       if dep.has_one?
-        myDep = (entity.get dep.has_one)
+        myDep = entity.get dep.has_one.0
+        hasOneController = new HasOneController myDep.model, @controller.model, dep.has_one
         @route.route @paths.uniq + myDep.routeClass.paths.all
-        hasOneController = new Controller myDep.model
-        @route.route "/#{@routeName}/:#{@routeName}_id/#{dep.has_one}"
-          .post hasOneController.post
-          .get hasOneController.getById
-          .put hasOneController.put
-          .delete hasOneController.delete
-    else
+          .post hasOneController~post
+          .get hasOneController~get
+          .put hasOneController~put
+          .delete hasOneController~delete
+        # @route.route "/#{@routeName}/:#{@routeName}_id/#{dep.has_one}"
 
 
 
