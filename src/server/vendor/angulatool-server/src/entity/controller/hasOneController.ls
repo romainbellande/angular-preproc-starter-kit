@@ -24,12 +24,9 @@ export class HasOneController extends Controller
     for key, value  of req.body
       data[key] = value
     data.save (err, child) ~>
-      console.log \child, child
       next err if err?
       putItem = {}
       putItem[@model.schemaName] = child._id
-      console.log \putItem, putItem
-      console.log \user_id, req.params["#{@parentModel.getName!}_id"]
       @parentModel.schema.findOneAndUpdate do
         _id: req.params["#{@parentModel.getName!}_id"]
         {$set: putItem}
@@ -40,26 +37,21 @@ export class HasOneController extends Controller
 
   delete: (req, res, next) ->
     if @options.child? and @options.child
-      console.log "has a child"
       @parentModel.schema.findOneAndUpdate do
         req.params["#{@parentModel.getName!}_id"]
         {$unset: @selector}
         (err, parent) ~>
           return res.send err if err?
-          console.log \parentremove, parent
           @schema.remove do
             * _id: parent[@model.schemaName]
             (err, child) ->
-              console.log
               return next err if err?
               res.sendStatus 200
     else
-      console.log "hasn't a child"
       @parentModel.schema.findById do
         req.params["#{@parentModel.getName!}_id"]
         @selector
         (err, parent) ~>
-          console.log parent
           res.send err if err?
           @schema.remove do
             * _id: parent[@model.schemaName]

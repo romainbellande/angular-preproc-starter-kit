@@ -4,3 +4,4 @@ module.exports = new A.Entity \meal do
     root: false
   attrs:
     name: String
+    price: Number

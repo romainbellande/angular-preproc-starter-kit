@@ -14,20 +14,19 @@ export class Entity
     @name = name
     @model = new Model @name, data.attrs, data.dep
     isRoot = !data.dep?root? or data.dep.root
-    if isRoot
-      @controller = new Controller @model
+
     _behaviors = void
     /* Behaviors  handler*/
     if data.behaviors?
       _behaviors = @behaviorHandler data.behaviors
 
-    @routeClass = new Route @name, @controller, _behaviors, data.dep
+    @routeClass = new Route @name, @model, _behaviors, data.dep
     @route = @routeClass.getRoute!
 
   getRoute: ~> @route
   depHandler : (dep) ~>
-    if dep.has_one?
-      console.log \dep:, dep.has_one.0
+    if dep.has?one?
+      console.log \dep:, dep.has.one.0
 
 
   behaviorHandler: (dataBehaviors) ~>
