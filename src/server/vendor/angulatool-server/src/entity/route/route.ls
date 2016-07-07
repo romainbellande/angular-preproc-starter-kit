@@ -10,9 +10,14 @@ router = express.Router!
 export class Route
   (@routeName, @model, behaviors, dep) ->
     @route = router
+    if @isRoot
+      @controller = new Controller @model
+    else if dep?
+      if dep.has?one?
+        @controller = new HasOneController myDep.model, @model, hasOneDep.1
     @paths = {
-      one: "/#{@routeName}",
-      many: "/#{@routeName}/:#{@routeName}_id",
+      path: "/#{@routeName}",
+      ctrl: @controller
       dep: {}
     }
     isRouterBegin = router.stack === []
@@ -44,6 +49,11 @@ export class Route
     routeTable "/#{routeName}", @route.stack if @isRoot
     @route = router
   getRoute: -> @route
+
+  readPath: (paths) ->
+    console.log paths.path
+    readPath paths.dep.path if paths.dep?
+
   depHandler: (dep) ->
     if dep?
       if dep.has?one?
@@ -56,13 +66,23 @@ export class Route
           (Object.keys depPaths).map (value, key) ->
             myDep.routeClass.paths.one ++ depPaths[value]
 
-          @paths.dep[myDep.name] = myDep.routeClass.paths.one
+          @paths.dep[myDep.name] = myDep.routeClass.paths
+
           if @isRoot
-            @route.route @paths.many ++ @paths.dep[myDep.name]
-              .post hasOneController~post
-              .get hasOneController~get
-              .put hasOneController~put
-              .delete hasOneController~delete
+            @paths.dep = myDep.routeClass.paths
+            # @route.route @paths.path
+            #   .post hasOneController~post
+            #   .get hasOneController~get
+            #   .put hasOneController~put
+            #   .delete hasOneController~delete
+            @route.route @paths.path
+              .get controller~get
+              .post controller~post
+
+            @route.route @paths.path + @paths.path + "_id"
+              .get controller~getById
+              .put controller~put
+              .delete controller~delete
         # @route.route "/#{@routeName}/:#{@routeName}_id/#{dep.has_one}"
 
 
