@@ -73,11 +73,8 @@ export class Route
 
   readPaths: (paths, parent) ->
     parentTmp = void
-    if paths.isRoot
-      @pathsTree.push paths.root
-      @pathsTree.push paths.root + paths.id
-      parentTmp = paths.root + paths.id
-    else if parent?
+
+    if parent?
       if paths.type == \has_one
         @pathsTree.push parent + paths.root
         parentTmp = parent + paths.root
@@ -85,6 +82,10 @@ export class Route
         @pathsTree.push parent + paths.root
         @pathsTree.push parent + paths.root + paths.id
         parentTmp = parent + paths.root + paths.id
+    else if paths.isRoot
+      @pathsTree.push paths.root
+      @pathsTree.push paths.root + paths.id
+      parentTmp = paths.root + paths.id
     if @pathsTree.length > 0
       # console.log "@pathsTree [#{@routeName}]", @pathsTree
       for k, dep of paths.dep

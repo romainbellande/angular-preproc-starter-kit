@@ -1,7 +1,7 @@
 A = require \../../vendor/angulatool-server/angulatool-server
 module.exports = new A.Entity \dog do
   dep:
-    root: false
+    root: true
     has:
       one:
         * \meal
