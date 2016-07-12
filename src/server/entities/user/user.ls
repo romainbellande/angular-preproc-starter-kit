@@ -11,12 +11,18 @@ module.exports = new A.Entity \user do
     name: String
     password: String
   behaviors:
-    * \troll
-      (req, res, next) ->
-        res.send "#{@getName!} is a god"
-    * \name
-      -> @name ...
-      InfoBehavior
-    * \info
-      -> @info ...
-      InfoBehavior
+    uniq:
+      * \troll
+        (req, res, next) ->
+          res.send "#{@getName!} is a god"
+      * \name
+        -> @name ...
+        InfoBehavior
+      * \info
+        -> @info ...
+        InfoBehavior
+    all:
+      * \test
+        (req, res, next) ->
+          res.send \test
+      ...

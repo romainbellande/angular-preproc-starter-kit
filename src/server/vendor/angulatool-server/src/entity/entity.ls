@@ -18,7 +18,8 @@ export class Entity
     _behaviors = void
     /* Behaviors  handler*/
     if data.behaviors?
-      _behaviors = @behaviorHandler data.behaviors
+      _behaviors = @behaviorHandler data.behaviors, \uniq if data.behaviors.uniq?
+      _behaviors = @behaviorHandler data.behaviors, \all if data.behaviors.all?
 
     @routeClass = new Route @name, @model, _behaviors, data.dep
     @route = @routeClass.getRoute!
@@ -29,17 +30,18 @@ export class Entity
       console.log \dep:, dep.has.one.0
 
 
-  behaviorHandler: (dataBehaviors) ~>
+  behaviorHandler: (dataBehaviors, type) ~>
     _behaviors = []
     _behaviorsMsg = {}
-    logger.info "[#{@name} behaviors]".toUpperCase!
-    for let behavior, i in dataBehaviors
-      _behaviorClass = void
-      if behavior.2?
-        _behaviorClass = new behavior.2 @model, behavior
+    logger.info "[#{@name} behaviors]".toUpperCase! + "[#{type}]".toUpperCase!
+    if dataBehaviors.[type]?
+      for let behavior, i in dataBehaviors[type]
+        _behaviorClass = void
+        if behavior.2?
+          _behaviorClass = new behavior.2 @model, behavior
+        else
+          _behaviorClass = new Behavior @model, behavior
         _behaviorsMsg["behavior_#{i}"] = "\"#{_behaviorClass.getName!}\" registered.."
-      else
-        _behaviorClass = new Behavior @model, behavior
-      _behaviors.push _behaviorClass
+        _behaviors.push _behaviorClass
     logger.box _behaviorsMsg
     _behaviors
