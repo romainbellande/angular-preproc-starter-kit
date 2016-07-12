@@ -10,29 +10,17 @@ router = express.Router!
 export class Route
   (@routeName, @model, behaviors, dep) ->
     @route = router
-    if @isRoot
-      @controller = new Controller @model
-    else if dep?
-      if dep.has?one?
-        @controller = new HasOneController myDep.model, @model, hasOneDep.1
-    @paths = {
-      path: "/#{@routeName}",
-      ctrl: @controller
+    @controller = new Controller @model
+
+
+    @paths =
+      root: "/#{@routeName}"
+      id: "/:#{@routeName}_id"
       dep: {}
-    }
+
     isRouterBegin = router.stack === []
     routeList = []
     @isRoot = !dep?root? or dep.root
-    if @isRoot
-      controller = new Controller @model
-      routeList[\one] = @route.route @paths.one
-        .get controller~get
-        .post controller~post
-
-      routeList[\many] = @route.route @paths.many
-        .get controller~getById
-        .put controller~put
-        .delete controller~delete
 
     @depHandler dep
 
@@ -50,40 +38,41 @@ export class Route
     @route = router
   getRoute: -> @route
 
-  readPath: (paths) ->
-    console.log paths.path
-    readPath paths.dep.path if paths.dep?
-
   depHandler: (dep) ->
+    if @isRoot
+      @paths.isRoot = true
+      @route.route @paths.root
+        .get @controller~get
+        .post @controller~post
+
+      @route.route @paths.root + @paths.id
+        .get @controller~getById
+        .put @controller~put
+        .delete @controller~delete
     if dep?
       if dep.has?one?
-        for hasOneDep in dep.has?one
+        for hasOneDep, k_hasOneDep in dep.has.one
+          myDep = (entity.get hasOneDep.0).routeClass.paths
+          myDep.opt = hasOneDep.1
+          myDep.type = \has_one
+          @paths.dep[k_hasOneDep] = myDep
+        @readPath @paths
 
-          myDep = entity.get hasOneDep.0
-          hasOneController = new HasOneController myDep.model, @model, hasOneDep.1
-          depPaths = myDep.routeClass.paths.dep
+  readPath: (paths, parent) ->
+    console.log \paths, paths
+    parentTmp = void
+    if paths.isRoot
+      console.log paths.root
+      console.log paths.root + paths.id
+      parentTmp = paths.root + paths.id
+    else if parent?
+      if paths.type == \has_one
+        console.log parent + paths.root
+        parentTmp = paths.root
+      else
+        console.log parent + paths.root
+        console.log parent + paths.root + paths.id
+        parentTmp = paths.root + paths.id
 
-          (Object.keys depPaths).map (value, key) ->
-            myDep.routeClass.paths.one ++ depPaths[value]
-
-          @paths.dep[myDep.name] = myDep.routeClass.paths
-
-          if @isRoot
-            @paths.dep = myDep.routeClass.paths
-            # @route.route @paths.path
-            #   .post hasOneController~post
-            #   .get hasOneController~get
-            #   .put hasOneController~put
-            #   .delete hasOneController~delete
-            @route.route @paths.path
-              .get controller~get
-              .post controller~post
-
-            @route.route @paths.path + @paths.path + "_id"
-              .get controller~getById
-              .put controller~put
-              .delete controller~delete
-        # @route.route "/#{@routeName}/:#{@routeName}_id/#{dep.has_one}"
-
-
+    @readPath paths.dep, parentTmp if paths.dep?
 

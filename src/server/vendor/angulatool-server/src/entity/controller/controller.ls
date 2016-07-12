@@ -2,6 +2,7 @@
 export class Controller
   (@model) ->
     @schema = @model.getSchema!
+    @selector = {}
 
   get: (req, res, next) ->
     @schema.find (err, data) ->
@@ -16,14 +17,18 @@ export class Controller
       next err if err?
       res.sendStatus 200
 
-  getById: (req, res, next) ->
+  getById: (req, res, next, callback, childName) ->
+    @selector[childName] = 1 if childName?
     @schema.findById do
       req.params["#{@model.getName!}_id"]
-      * password: 0
-        __v: 0
+      @selector
       (err, entity) ->
         res.send err if err?
-        res.json entity
+
+        if callback?
+          callback entity
+        else
+          res.json entity
 
   put: (req, res, next) ->
     @schema.findOneAndUpdate do
