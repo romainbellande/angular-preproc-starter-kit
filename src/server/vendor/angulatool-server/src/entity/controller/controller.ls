@@ -1,4 +1,7 @@
 'use strict'
+
+entityUtil = require \../entity
+
 export class Controller
   (@model, @path) ->
     @schema = @model.getSchema!
@@ -32,7 +35,8 @@ export class Controller
 
   getById: (req, res, next) ->
     if @path?
-      res.send @path
+      entityUtil
+      res.send @model.getName! + " " + @path
     else
       @callbackHandler ...
     # @callbackHandler req, res, next
