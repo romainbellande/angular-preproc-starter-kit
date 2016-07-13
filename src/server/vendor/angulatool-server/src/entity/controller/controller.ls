@@ -1,6 +1,6 @@
 'use strict'
 export class Controller
-  (@model) ->
+  (@model, @path) ->
     @schema = @model.getSchema!
     @selector = {}
 
@@ -17,18 +17,26 @@ export class Controller
       next err if err?
       res.sendStatus 200
 
-  getById: (req, res, next, callback, childName) ->
-    @selector[childName] = 1 if childName?
+  callbackHandler: (req, res, next, childName, callback) ->
+    @selector[req.childName] = 1 if req.childName?
     @schema.findById do
       req.params["#{@model.getName!}_id"]
       @selector
       (err, entity) ->
-        res.send err if err?
-
+        return next err if err?
+        req.entity= entity
         if callback?
           callback entity
         else
           res.json entity
+
+  getById: (req, res, next) ->
+    if @path?
+      res.send @path
+    else
+      @callbackHandler ...
+    # @callbackHandler req, res, next
+
 
   put: (req, res, next) ->
     @schema.findOneAndUpdate do

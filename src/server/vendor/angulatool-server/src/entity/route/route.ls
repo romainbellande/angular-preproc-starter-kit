@@ -26,31 +26,25 @@ export class Route
     @depHandler dep
 
     app.use @route
+    # Express Middleware
+    if @isRoot
+      app.use (req, res, next) ->
+        console.log \middleware
+
     routeTable "/#{routeName}", @route.stack if @isRoot
     @route = router
+
   getRoute: -> @route
+
   behaviorHandler: (behaviors) ->
     behaviorsList = []
     if behaviors?
       for behavior in behaviors
         behaviorsList.push behavior
-      # isBehaviorRouteCreated = false
-      # routeList[\behavior] = ""
-      # if !isBehaviorRouteCreated
-      #   routeList[\behavior] = @route.route
-        # isBehaviorRouteCreated = true
-      # routeList[\behavior].get behavior.get
+
   depHandler: (dep) ->
     if @isRoot
       @paths.isRoot = true
-      # @route.route @paths.root
-      #   .get @controller~get
-      #   .post @controller~post
-
-      # @route.route @paths.root + @paths.id
-      #   .get @controller~getById
-      #   .put @controller~put
-      #   .delete @controller~delete
     if dep?
       if dep.has?one?
         for hasOneDep, k_hasOneDep in dep.has.one
@@ -60,6 +54,7 @@ export class Route
           @paths.dep[k_hasOneDep] = myDep
     @readPaths @paths
     if @isRoot
+      @writePaths!
       logger.info "[#{@routeName} PATHS]".toUpperCase!
       _pathsTreeMsg = {}
       for k, path of @pathsTree
@@ -67,9 +62,35 @@ export class Route
       logger.box _pathsTreeMsg
 
 
-  writePaths: (paths) ->
-    for path of paths
-      console.log path
+  writePaths: ->
+
+    isLeaf = (index) ~>
+      @pathsTree.length == index + 1
+    isRoot = (index) ->
+      index == 0
+    isRootId = (index) ->
+      isRoot index - 1 && index == 1
+
+    for path, k in @pathsTree
+      pathTab = path.substring(1).split \/
+      if isRoot k
+        @route.route path
+          .get @controller~get
+          .post @controller~post
+
+      else if isRootId k
+        @route.route path
+          .get @controller~getById
+          .put @controller~put
+          .delete @controller~delete
+
+      else
+        console.log path
+        depController = new Controller @model, path
+        @route.route path
+          .get depController~getById
+
+
 
   readPaths: (paths, parent) ->
     parentTmp = void
