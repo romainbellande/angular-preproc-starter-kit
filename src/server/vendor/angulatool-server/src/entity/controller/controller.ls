@@ -4,8 +4,9 @@ entityUtil = require \../entity
 
 export class Controller
   (@model, @path) ->
-    @schema = @model.getSchema!
-    @selector = {}
+    @pathTab = @path.substr 1 .split \/ if @path?
+    # @schema = @model.getSchema!
+    # @selector = {}
 
   get: (req, res, next) ->
     @schema.find (err, data) ->
@@ -20,23 +21,61 @@ export class Controller
       next err if err?
       res.sendStatus 200
 
-  callbackHandler: (req, res, next, childName, callback) ->
-    @selector[req.childName] = 1 if req.childName?
-    @schema.findById do
-      req.params["#{@model.getName!}_id"]
-      @selector
-      (err, entity) ->
+  isManyType: (index) ~>
+    return index < @pathTab.length && index + 1 < @pathTab.length && @pathTab[index + 1].indexOf \: == 0
+
+  isOneType: (index) ~>
+    return index < @pathTab.length && (!(index + 1 < @pathTab.length) || (index + 1 < @pathTab.length && @pathTab[index + 1].indexOf \: == -1))
+
+  callbackHandler: (req, res, next, index, childId) ~>
+    model = entityUtil.get(@pathTab[index]).model
+    id = void
+    if childId?
+      id = childId
+    else
+      id = req.params["#{model.getName!}_id"]
+    selector = {}
+    selector[@pathTab[index+2]] = 1 if @isOneType index + 2
+    model.schema.findById do
+      id
+      selector
+      (err, entity) ~>
         return next err if err?
         req.entity= entity
-        if callback?
-          callback entity
+        if index + 1 < @pathTab.length
+          @callbackHandler req, res, next, index + 1, entity[@pathTab[index+1]]
         else
           res.json entity
 
+  # oneTypeHandler: (req, res, next, index) ->
+  #   model = entityUtil.get(@pathTab[index]).model
+  #   @callbackHandler req, res, next, model
+
+  # manyTypeHandler: (req, res, next, index) ->
+  #   model = entityUtil.get(@pathTab[index]).model
+  #   if index == 0
+  #     if @isOneType index + 2
+  #       @callbackHandler req, res, next, model, index + 2
+  #     else
+  #       @callbackHandler req, res, next, model
+
+
+
+
+  typeHandler: (req, res, next, index) ->
+    if index < @pathTab.length
+      if @isManyType index
+        @manyTypeHandler ...
+      else
+        @oneTypeHandler ...
+    else
+      return null
+
   getById: (req, res, next) ->
     if @path?
-      entityUtil
-      res.send @model.getName! + " " + @path
+      console.log @pathTab
+      @callbackHandler req, res, next, 0
+      # res.send @model.getName! + " " + @path
     else
       @callbackHandler ...
     # @callbackHandler req, res, next
