@@ -27,6 +27,13 @@ export class Controller
   isOneType: (index) ~>
     return index < @pathTab.length && (!(index + 1 < @pathTab.length) || (index + 1 < @pathTab.length && @pathTab[index + 1].indexOf \: == -1))
 
+  createPopulationTree: (populationTree, index, isTreeRoot) ~>
+    if @isOneType index
+      if isTreeRoot? && isTreeRoot
+        populationTree.populate = entityUtil.get @pathTab[index] .name
+
+
+
   callbackHandler: (req, res, next, index, childId) ~>
     model = entityUtil.get(@pathTab[index]).model
     id = void
