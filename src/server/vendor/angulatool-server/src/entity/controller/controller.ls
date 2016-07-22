@@ -29,8 +29,20 @@ export class Controller
 
   createPopulationTree: (populationTree, index, isTreeRoot) ~>
     if @isOneType index
+      name = entityUtil.get @pathTab[index] .name
+      child = void
       if isTreeRoot? && isTreeRoot
-        populationTree.populate = entityUtil.get @pathTab[index] .name
+        populationTree.path = name
+        child = populationTree
+      else
+        populationTree.populate = { path: name }
+        child = populationTree.populate
+      if index + 1 < @pathTab.length
+        return  @createPopulationTree child, index + 1, false
+      else
+        return populationTree
+
+
 
 
 
@@ -41,18 +53,17 @@ export class Controller
       id = childId
     else
       id = req.params["#{model.getName!}_id"]
-    selector = {}
-    selector[@pathTab[index+2]] = 1 if @isOneType index + 2
-    model.schema.findById do
-      id
-      selector
-      (err, entity) ~>
+    # selector = {}
+    # selector[@pathTab[index+2]] = 1 if @isOneType index + 2
+    console.log \populate, @createPopulationTree {}, index + 2, true
+    model.schema.findById id
+      .populate @createPopulationTree {}, index + 2, true
+      .exec (err, entity) ~>
         return next err if err?
-        req.entity= entity
-        if index + 1 < @pathTab.length
-          @callbackHandler req, res, next, index + 1, entity[@pathTab[index+1]]
-        else
-          res.json entity
+        # if index + 1 < @pathTab.length
+        #   @callbackHandler req, res, next, index + 1, entity[@pathTab[index+1]]
+        # else
+        res.json entity
 
   # oneTypeHandler: (req, res, next, index) ->
   #   model = entityUtil.get(@pathTab[index]).model
