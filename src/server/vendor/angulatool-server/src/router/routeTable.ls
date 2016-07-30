@@ -6,11 +6,12 @@ module.exports = (baseUrl, routes) ->
   for key of routes
     if routes.hasOwnProperty key
       val = routes[key]
-      if val.route && (val.route.path.indexOf baseUrl) == 0
+      # if val.route && (val.route.path.indexOf baseUrl) == 0
+      if val.route
         val = val.route
         for key2 of val.stack
           tmp = {}
-          tmp[val.stack[key2].method] = val.path
+          tmp[val.stack[key2].method] = baseUrl + val.path
           table.push tmp
 
 

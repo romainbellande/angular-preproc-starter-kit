@@ -5,7 +5,7 @@ entityUtil = require \../entity
 export class Controller
   (@model, @path) ->
     @pathTab = @path.substr 1 .split \/ if @path?
-    # @schema = @model.getSchema!
+    @schema = @model.getSchema!
     # @selector = {}
 
   get: (req, res, next) ->
@@ -27,76 +27,10 @@ export class Controller
   isOneType: (index) ~>
     return index < @pathTab.length && (!(index + 1 < @pathTab.length) || (index + 1 < @pathTab.length && @pathTab[index + 1].indexOf \: == -1))
 
-  createPopulationTree: (populationTree, index, isTreeRoot) ~>
-    if @isOneType index
-      name = entityUtil.get @pathTab[index] .name
-      child = void
-      if isTreeRoot? && isTreeRoot
-        populationTree.path = name
-        child = populationTree
-      else
-        populationTree.populate = { path: name }
-        child = populationTree.populate
-      if index + 1 < @pathTab.length
-        return  @createPopulationTree child, index + 1, false
-      else
-        return populationTree
-
-
-
-
-
-  callbackHandler: (req, res, next, index, childId) ~>
-    model = entityUtil.get(@pathTab[index]).model
-    id = void
-    if childId?
-      id = childId
-    else
-      id = req.params["#{model.getName!}_id"]
-    # selector = {}
-    # selector[@pathTab[index+2]] = 1 if @isOneType index + 2
-    console.log \populate, @createPopulationTree {}, index + 2, true
-    model.schema.findById id
-      .populate @createPopulationTree {}, index + 2, true
-      .exec (err, entity) ~>
-        return next err if err?
-        # if index + 1 < @pathTab.length
-        #   @callbackHandler req, res, next, index + 1, entity[@pathTab[index+1]]
-        # else
-        res.json entity
-
-  # oneTypeHandler: (req, res, next, index) ->
-  #   model = entityUtil.get(@pathTab[index]).model
-  #   @callbackHandler req, res, next, model
-
-  # manyTypeHandler: (req, res, next, index) ->
-  #   model = entityUtil.get(@pathTab[index]).model
-  #   if index == 0
-  #     if @isOneType index + 2
-  #       @callbackHandler req, res, next, model, index + 2
-  #     else
-  #       @callbackHandler req, res, next, model
-
-
-
-
-  typeHandler: (req, res, next, index) ->
-    if index < @pathTab.length
-      if @isManyType index
-        @manyTypeHandler ...
-      else
-        @oneTypeHandler ...
-    else
-      return null
-
   getById: (req, res, next) ->
-    if @path?
-      console.log @pathTab
-      @callbackHandler req, res, next, 0
-      # res.send @model.getName! + " " + @path
-    else
-      @callbackHandler ...
-    # @callbackHandler req, res, next
+    query = @schema.findById req.params["#{@model.getName!}_id"]
+    query.exec (err, entity) ->
+      res.send entity
 
 
   put: (req, res, next) ->

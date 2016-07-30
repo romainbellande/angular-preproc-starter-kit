@@ -21,7 +21,7 @@ export class Entity
       _behaviors = @behaviorHandler data.behaviors, \uniq if data.behaviors.uniq?
       _behaviors = @behaviorHandler data.behaviors, \all if data.behaviors.all?
 
-    @routeClass = new Route @name, @model, _behaviors, data.dep
+    @routeClass = new Route @name, @model, _behaviors, data
     @route = @routeClass.getRoute!
 
   getRoute: ~> @route
