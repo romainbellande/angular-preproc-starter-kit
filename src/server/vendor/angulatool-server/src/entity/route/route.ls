@@ -56,11 +56,17 @@ export class Route
       @paths.isRoot = true
     if dep?
       if dep.has?one?
+        for depValue, depKey in dep.has.one
+          depRouter = express.Router {mergeParams: true}
+          @router.use "/:#{@routeName}_id/#{depValue.0}", depRouter
+          # routeFunc = (req, res, next) ~> res.send "/:#{@routeName}_id/#{depValue.0}"
+          depController = new HasOneController (entity.get depValue.0).model, @model, depValue.1
+          depRouter.route \/
+            .get depController~get
+            .post depController~post
+            .delete depController~delete
+          console.log "dep #{depKey}: ", value
+      if dep.has?many?
         for value, key in dep.has.one
           depRouter = express.Router {mergeParams: true}
           @router.use "/:#{@routeName}_id/#{value.0}", depRouter
-          routeFunc = (req, res, next) ~> res.send "/:#{@routeName}_id/#{value.0}"
-          depRouter.route \/
-            .get routeFunc
-            .post routeFunc
-          console.log "dep #{key}: ", value

@@ -3,8 +3,7 @@
 entityUtil = require \../entity
 
 export class Controller
-  (@model, @path) ->
-    @pathTab = @path.substr 1 .split \/ if @path?
+  (@model, @parent) ->
     @schema = @model.getSchema!
     # @selector = {}
 
@@ -13,6 +12,7 @@ export class Controller
       next err if err?
       res.json data
 
+
   post: (req, res, next) ->
     data = new @schema
     for key, value  of req.body
@@ -20,12 +20,6 @@ export class Controller
     data.save (err) ->
       next err if err?
       res.sendStatus 200
-
-  isManyType: (index) ~>
-    return index < @pathTab.length && index + 1 < @pathTab.length && @pathTab[index + 1].indexOf \: == 0
-
-  isOneType: (index) ~>
-    return index < @pathTab.length && (!(index + 1 < @pathTab.length) || (index + 1 < @pathTab.length && @pathTab[index + 1].indexOf \: == -1))
 
   getById: (req, res, next) ->
     query = @schema.findById req.params["#{@model.getName!}_id"]

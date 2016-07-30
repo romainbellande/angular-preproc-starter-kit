@@ -6,8 +6,8 @@ modelList = []
 export class Model
   (@schemaName, @data, dep) ->
     if dep?
-      if dep.has_one?
-        for hasOneDep in dep.has_one
+      if dep.has?one?
+        for hasOneDep in dep.has.one
           @data[hasOneDep.0] = {type: mongoose.Schema.Types.ObjectId, ref: hasOneDep.0}
     mySchema = new Schema @data
     @schema = mongoose.model @schemaName, mySchema
