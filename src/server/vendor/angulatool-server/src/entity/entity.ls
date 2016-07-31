@@ -11,7 +11,15 @@ export get = (name) ->
 export class Entity
 
   (name, data) ->
-    @name = name
+    plural = void
+    if data.plural?
+      plural = data.plural
+    else
+      plural = "#{name}s"
+    @name =
+      singular: name
+      plural: plural
+
     @model = new Model @name, data.attrs, data.dep
     isRoot = !data.dep?root? or data.dep.root
 
@@ -33,7 +41,7 @@ export class Entity
   behaviorHandler: (dataBehaviors, type) ~>
     _behaviors = []
     _behaviorsMsg = {}
-    logger.info "[#{@name} behaviors]".toUpperCase! + "[#{type}]".toUpperCase!
+    logger.info "[#{@name.singular} behaviors]".toUpperCase! + "[#{type}]".toUpperCase!
     if dataBehaviors.[type]?
       for let behavior, i in dataBehaviors[type]
         _behaviorClass = void

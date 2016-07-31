@@ -4,14 +4,14 @@ export class Behavior
   (model, behavior) ->
     @model = model
     @behavior = behavior
-    @schema = @model.getSchema!
+    @schema = @model.schema
   get: (req, res, next) ~>
     @behavior.1 ...
   getName: ~> @behavior.0
   getSchema: ~> @schema
   getParams: (req, res, next, params, callback) ~>
     @schema.findById do
-      req.params["#{@model.getName!}_id"]
+      req.params["#{@model.name.singular}_id"]
       params
       (err, entity) ->
         res.send err if err?

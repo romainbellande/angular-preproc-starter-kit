@@ -7,6 +7,10 @@ module.exports = new A.Entity \user do
         * \dog
           child: true
         ...
+      many:
+        * \dog
+          child: true
+        ...
   attrs:
     name: String
     password: String

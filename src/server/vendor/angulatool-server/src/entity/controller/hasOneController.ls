@@ -3,19 +3,18 @@ Controller = (require \./controller).Controller
 export class HasOneController extends Controller
   (@model, @parentModel, @options) ->
     @selector = {}
-    @selector[@model.schemaName] = 1
+    @selector[@model.name.singular] = 1
     super ...
 
   get: (req, res, next) ->
     @parentModel.schema.findById do
-      req.params["#{@parentModel.getName!}_id"]
+      req.params["#{@parentModel.name.singular}_id"]
       @selector
       (err, parent) ~>
         return next err if err?
         @schema.findById do
-          parent[@model.schemaName]
+          parent[@model.name.singular]
           (err, child) ->
-            console.log child
             return next err if err?
             res.json child
 
@@ -24,11 +23,11 @@ export class HasOneController extends Controller
     for key, value  of req.body
       data[key] = value
     data.save (err, child) ~>
-      next err if err?
+      return next err if err?
       putItem = {}
-      putItem[@model.schemaName] = child._id
+      putItem[@model.name.singular] = child._id
       @parentModel.schema.findOneAndUpdate do
-        _id: req.params["#{@parentModel.getName!}_id"]
+        _id: req.params["#{@parentModel.name.singular}_id"]
         {$set: putItem}
         {new: true}
         (err, parent) ->
@@ -38,23 +37,23 @@ export class HasOneController extends Controller
   delete: (req, res, next) ->
     if @options.child? and @options.child
       @parentModel.schema.findOneAndUpdate do
-        req.params["#{@parentModel.getName!}_id"]
+        req.params["#{@parentModel.name.singular!}_id"]
         {$unset: @selector}
         (err, parent) ~>
           return res.send err if err?
           @schema.remove do
-            * _id: parent[@model.schemaName]
+            * _id: parent[@model.name.singular]
             (err, child) ->
               return next err if err?
               res.sendStatus 200
     else
       @parentModel.schema.findById do
-        req.params["#{@parentModel.getName!}_id"]
+        req.params["#{@parentModel.name.singular}_id"]
         @selector
         (err, parent) ~>
           res.send err if err?
           @schema.remove do
-            * _id: parent[@model.schemaName]
+            * _id: parent[@model.name.singular]
             (err, child) ->
               return next err if err?
               res.sendStatus 200

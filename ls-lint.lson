@@ -280,5 +280,5 @@ no-throw-strings: \error
 
 # Don't use console or debugger.
 # [note] Not supported yet
-no-console: \warning
+no-console: \error
 no-debugger: \warning
