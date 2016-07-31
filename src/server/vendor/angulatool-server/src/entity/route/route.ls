@@ -19,29 +19,22 @@ export class Route
     @pathsTree = []
 
     @paths =
-      root: "/#{@plural}"
-      id: "/:#{@routeName}_id"
+      name:
+        sing: @routeName
+        plur: @plural
       dep: {}
+
     @router = express.Router!
     isRouterBegin = @router.stack === []
     routeList = []
     @isRoot = !@dep?root? or @dep.root
     # @behaviorHandler behaviors
     @depHandler @dep
+    console.log \paths, @paths
+    if @isRoot || !@paths.isRoot
+      @createManyRoute @router, @controller, @paths.name.sing, @paths.name.plur
 
-    if @isRoot || @paths.type == \has_one
-      @router.route \/
-        .get @controller~get
-        .post @controller~post
 
-      @router.route @paths.id
-        .get @controller~getById
-        .put @controller~put
-        .delete @controller~delete
-
-      app.use "/api#{@paths.root}", @router
-
-    routeTable @paths.root, @router.stack if @isRoot
 
   getRoute: -> @router
 
@@ -51,6 +44,20 @@ export class Route
       for behavior in behaviors
         behaviorsList.push behavior
 
+  createManyRoute: (router, controller, singName, plurName) ->
+    router.route \/
+      .get controller~get
+      .post controller~post
+
+    router.route "/:#{singName}_id"
+      .get controller~getById
+      .put controller~put
+      .delete controller~delete
+
+    app.use "/api/#{plurName}", router
+    routeTable plurName, router.stack
+
+
   depHandler: (dep) ->
     if @isRoot
       @paths.isRoot = true
@@ -58,14 +65,23 @@ export class Route
       if dep.has?one?
         for depValue, depKey in dep.has.one
           depRouter = express.Router {mergeParams: true}
-          @router.use "/:#{@routeName}_id/#{depValue.0}", depRouter
-          # routeFunc = (req, res, next) ~> res.send "/:#{@routeName}_id/#{depValue.0}"
           depController = new HasOneController (entity.get depValue.0).model, @model, depValue.1
           depRouter.route \/
             .get depController~get
             .post depController~post
             .delete depController~delete
-          console.log "dep #{depKey}: ", value
+          depManyRouter = express.Router!
+          depManyController = new Controller (entity.get depValue.0).model
+          depNames = (entity.get depValue.0).routeClass.paths.name;
+
+          # if @paths.isRoot? && @paths.isRoot
+          @router.use "/:#{@routeName}_id/#{depValue.0}", depRouter
+          console.log \globalRouter, "/:#{@routeName}_id/#{depValue.0}"
+          # else
+          #   @router.use "/:#{@routeName}_id/#{depValue.0}", depRouter
+          #   console.log \manyRouter, "/:#{@routeName}_id/#{depValue.0}"
+
+          # @createManyRoute depManyRouter, depManyController, depNames.sing, depNames.plur
       if dep.has?many?
         for value, key in dep.has.one
           depRouter = express.Router {mergeParams: true}
