@@ -8,6 +8,18 @@ export class HasManyController extends Controller
     @selector[@name.plural] = 1
     super ...
 
+  getById: (req, res, next) ->
+    @parentModel.schema.findById do
+      req.params["#{@parentModel.name.singular}_id"]
+      @selector
+    .populate do
+      @name.plural
+      null
+      {_id: req.params["#{@model.name.singular}_id"]}
+    .exec (err, entities) ~>
+      return next err if err?
+      res.json entities[@name.plural].0
+
   get: (req, res, next) ->
     @parentModel.schema.findById do
       req.params["#{@parentModel.name.singular}_id"]
