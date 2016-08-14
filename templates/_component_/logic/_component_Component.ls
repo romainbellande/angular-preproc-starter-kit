@@ -1,6 +1,5 @@
 'use strict'
 
-new angulatool.component do
-  name: \_component_
+new angulatool.component \_component_ do
   template: ''
-  callback: ($scope, $element, $attrs) !->
+  callback: ($scope, $element, $attrs, =component=Service) !->

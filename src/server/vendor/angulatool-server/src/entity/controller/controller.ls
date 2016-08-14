@@ -14,7 +14,7 @@ export class Controller
 
   post: (req, res, next) ->
     data = new @schema
-    for key, value  of req.body
+    for key, valuet  of req.body
       data[key] = value
     data.save (err) ->
       next err if err?

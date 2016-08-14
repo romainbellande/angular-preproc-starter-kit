@@ -1,14 +1,3 @@
-/**
-
-  TODO: [BUILD]
-  - compile all [ls, jade, stylus]
-  - inject all [inject-templates, injection, vendors, wiredep]
-  - copy yml
-  - copy server package.json & server npm install
-
-  */
-
-
   var gulp        = require('gulp'),
   server          = require('gulp-server-livereload'),
   watch           = require('gulp-watch'),
@@ -50,7 +39,8 @@
   derequire       = require('browserify-derequire'),
   open            = require('gulp-open'),
   path            = require('path'),
-  lsLint          = require('ls-lint');
+  lsLint          = require('ls-lint'),
+  strip            = require('gulp-strip-comments');
 
   var reload = browserSync.reload;
 
@@ -59,7 +49,7 @@
     ls_spec: ['!./src/server/node_modules', './src/**/*Spec.ls'],
     jade: ['!./src/client/index.jade', '!./src/server/node_modules', './src/**/*.jade'],
     jade_index: './src/client/index.jade',
-    stylus: ['!./src/server/node_modules', './src/**/*.styl'],
+    stylus: ['!./src/**/_*/*.styl', '!./src/**/_styles/**/*.styl', '!./src/**/_*.styl', '!./src/server/node_modules', './src/**/*.styl'],
     js: ['./build/client/app/**/*.js'],
     html: ['app/**/*.html'],
     css: ['client/assets/**/*.css', 'client/app/**/*.css'],
@@ -75,7 +65,7 @@
     components: ['./build/client/app/**/*Component.js'],
     server_package: 'server/package.json',
     server: './build/server/bin/server.js',
-    server_dist: './dist/server/server-bundle.js',
+    server_dist: './dist/server/bin/server.js',
     client: './build/client/index.html'
   };
 
@@ -158,8 +148,8 @@ gulp.task('inject-html', function () {
     starttag: 'template: \'',
     endtag: '\'',
     transform: function (filePath, file, i, length, targetFile) {
-      if (filePath.indexOf('../render') > -1) {
-        // console.log(', template: \"' + file.contents.toString('utf-8') + '\"');
+      if (filePath.indexOf('../render') === 0) {
+        console.log('[template injected]: ' + filePath.split('../render/')[1]);
         return escape(minifyHtmlInput(file.contents.toString('utf-8'), {collapseWhitespace: true, preventAttributesEscaping: true}));
       }
     }
@@ -304,24 +294,50 @@ gulp.task('copy-yml-dist', function () {
   .pipe(copy('./dist/', {prefix: 1}));
   });
 
-gulp.task('clean_dist', ['build'], function () {
+gulp.task('clean-dist', ['build'], function () {
   return gulp.src('dist/', {read: false})
   .pipe(clean());
   });
+
+gulp.task('copy-node_modules-dist', function () {
+  return gulp.src('./build/server/node_modules/**/*')
+  .pipe(copy('./dist/', {prefix: 2}));
+});
+
+gulp.task('server-dist', function () {
+  return gulp.src(['!./build/server/node_modules/**/*', './build/server/**/*.js'])
+  .pipe(strip())
+  .pipe(uglify())
+  .pipe(gulp.dest(path.join(__dirname, './dist/server')));
+  });
+
+gulp.task('copy-build-to-dist', function () {
+  gulp.src(['./build/server/node_modules/**/*', './build/server/**/*.json', './build/server/**/*.yml'])
+  .pipe(copy('./dist/', {prefix: 1 }));
+});
+
+gulp.task('server-dist2', ['clean-dist'], function () {
+  return gulp.src(['!./build/server/node_modules/**/*', './build/server/**/*'])
+  .pipe(strip())
+  .pipe(uglify())
+  .pipe(gulp.dest('./dist/server'));
+  });
+
 gulp.task('browserify', function () {
+
   browserify({
     browserField : false,
     entries: './build/server/bin/server.js',
-    paths: ['./build/server'],
+    paths: ['./build/server/', './dist/server/node_modules/'],
     // entries: 'bin/server.js',
-    builtins : false,
     commondir: false,
+    builtins: false,
     insertGlobalVars : {
       process: undefined,
       global: undefined,
       'Buffer.isBuffer': undefined,
       Buffer: undefined,
-      __dirname: './dist/server'
+
     }
     })
   .bundle()
@@ -332,7 +348,7 @@ gulp.task('browserify', function () {
   .pipe(gulp.dest(path.join(__dirname, './dist/server')));
   });
 
-gulp.task('usemin', ['clean_dist'], function() {
+gulp.task('usemin', function() {
   return gulp.src('./build/client/index.html')
   .pipe(usemin({
     css: [ minifyCss(), rev() ],
@@ -341,12 +357,12 @@ gulp.task('usemin', ['clean_dist'], function() {
     inlinejs: [ uglify({beautify:true, mangle: true}) ],
     inlinecss: [ minifyCss() ]
     }))
-  .pipe(gulp.dest('./dist/client/'));
+  .pipe(gulp.dest(path.join(__dirname, './dist/client')));
   });
 
 gulp.task('client-dist', ['usemin']);
-gulp.task('server-dist', ['browserify']);
-gulp.task('nodemon-dist', function (cb) {
+//gulp.task('server-dist', ['browserify']);
+gulp.task('nodemon-dist', ['mongodb'], function (cb) {
   var started = false;
   return nodemon({
     script: paths.server_dist
@@ -363,7 +379,7 @@ gulp.task('open-dist', function () {
     }));
   });
 gulp.task('dist', function (callback) {
-  runSequence('client-dist', 'server-dist', 'nodemon-dist',  callback);
+  runSequence(['client-dist', 'server-dist', 'copy-build-to-dist'], 'nodemon-dist',  callback);
   });
 
 /*=====  End of DIST  ======*/
@@ -380,7 +396,7 @@ gulp.task('mongodb', ['data-folder'], function () {
   exec ('mongod --dbpath ' + __dirname + '/build/server/db');
   });
 
-gulp.task('nodemon', ['watch', 'mongodb'], function (cb) {
+gulp.task('nodemon-build', ['watch', 'mongodb'], function (cb) {
   var started = false;
   return nodemon({
     script: paths.server
@@ -392,7 +408,7 @@ gulp.task('nodemon', ['watch', 'mongodb'], function (cb) {
       });
     });
 
-gulp.task('serve', ['nodemon'], function() {
+gulp.task('serve', ['nodemon-build'], function() {
   browserSync.init({
     proxy: "http://localhost:5000",
     open: true,
